@@ -48,6 +48,36 @@ def register_code_execution_tools(mcp, revit_get, revit_post, revit_image=None):
                     collector = DB.FilteredElementCollector(doc).OfClass(DB.TextNoteType).ToElements()
                     print("Number of text note types:", len(collector))
                     '''
+                    
+        Tips for writing IronPython code in Revit:
+        -----------------------------------------
+        1. Accessing Element.Name property:
+           Some Revit elements don't expose the 'Name' property directly in IronPython.
+           Use defensive access patterns:
+
+           # Option 1: Use getattr with a default value
+           name = getattr(element, 'Name', 'N/A')
+
+           # Option 2: Use try-except
+           try:
+               name = element.Name
+           except AttributeError:
+               name = 'Unable to retrieve name'
+
+           # Option 3: Use BuiltInParameter for element types
+           param = element_type.get_Parameter(DB.BuiltInParameter.ALL_MODEL_TYPE_NAME)
+           name = param.AsString() if param else 'N/A'
+
+        2. Always check if elements exist before accessing properties:
+           element = doc.GetElement(element_id)
+           if element:
+               # Safe to access element properties
+
+        3. Use hasattr() before accessing optional properties:
+           if hasattr(element_type, 'FamilyName'):
+               family_name = element_type.FamilyName
+
+        4. The Tool already wraps the code around a transaction.
         """
         try:
             payload = {"code": code, "description": description}

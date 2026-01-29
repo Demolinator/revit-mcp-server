@@ -29,17 +29,11 @@ def register_code_execution_routes(api):
         }
         """
         try:
-            # Parse the request data with explicit encoding handling
-            # Handle both string and bytes data from the HTTP request
-            if isinstance(request.data, bytes):
-                request_data = request.data.decode('utf-8', errors='replace')
-            else:
-                request_data = request.data
-            
+            # Parse the request data
             data = (
-                json.loads(request_data)
-                if isinstance(request_data, str)
-                else request_data
+                json.loads(request.data)
+                if isinstance(request.data, str)
+                else request.data
             )
             code_to_execute = data.get("code", "")
             description = data.get("description", "Code execution")
@@ -102,6 +96,10 @@ def register_code_execution_routes(api):
                 # Restore stdout if something went wrong
                 sys.stdout = old_stdout
 
+                # Capture any partial output before the error
+                partial_output = captured_output.getvalue()
+                captured_output.close()
+
                 # Rollback transaction if it's still active
                 if t.HasStarted() and not t.HasEnded():
                     t.RollBack()
@@ -109,34 +107,65 @@ def register_code_execution_routes(api):
                 # Get the full traceback
                 error_traceback = traceback.format_exc()
 
-                logger.error("Code execution failed: {}".format(str(exec_error)))
+                # Build enhanced error message with hints
+                error_type = type(exec_error).__name__
+                error_msg = str(exec_error)
+                enhanced_message = "{}: {}".format(error_type, error_msg)
+
+                # Add helpful hints for common errors
+                hints = []
+                if error_type == "AttributeError":
+                    if error_msg == "Name" or "Name" in error_msg:
+                        hints.append(
+                            "The 'Name' property may not be directly accessible in IronPython. "
+                            "Try using getattr(element, 'Name', 'N/A') or "
+                            "element.get_Parameter(DB.BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString()"
+                        )
+                    else:
+                        hints.append(
+                            "Some Revit API properties are not directly accessible in IronPython. "
+                            "Try using getattr(obj, 'property_name', default_value) for safe access."
+                        )
+                elif error_type == "NullReferenceException" or "NoneType" in error_msg:
+                    hints.append(
+                        "An object is None/null. Ensure you check if elements exist before "
+                        "accessing their properties: 'if element:' or 'if element is not None:'"
+                    )
+                elif error_type == "InvalidOperationException":
+                    hints.append(
+                        "This operation may require being inside a transaction, or the element "
+                        "may be in a state that doesn't allow this operation."
+                    )
+                elif "Transaction" in error_msg or "transaction" in error_msg:
+                    hints.append(
+                        "Transaction error. Note that this endpoint already wraps your code "
+                        "in a transaction. Avoid starting nested transactions."
+                    )
+
+                logger.error("Code execution failed: {}".format(enhanced_message))
                 logger.error("Traceback: {}".format(error_traceback))
 
+                response_data = {
+                    "status": "error",
+                    "error": enhanced_message,
+                    "error_type": error_type,
+                    "traceback": error_traceback,
+                    "code_attempted": code_to_execute,
+                }
+
+                if partial_output:
+                    response_data["partial_output"] = partial_output
+
+                if hints:
+                    response_data["hints"] = hints
+
                 return routes.make_response(
-                    data={
-                        "status": "error",
-                        "error": str(exec_error),
-                        "traceback": error_traceback,
-                        "code_attempted": code_to_execute,
-                    },
+                    data=response_data,
                     status=500,
                 )
 
         except Exception as e:
             logger.error("Execute code request failed: {}".format(str(e)))
-            
-            # Provide specific error message for encoding issues
-            error_str = str(e)
-            if "encoding" in error_str.lower() or "codepage" in error_str.lower():
-                return routes.make_response(
-                    data={
-                        "error": "Encoding error - .NET CodePages encoding provider may not be registered",
-                        "details": error_str,
-                        "suggestion": "Ensure System.Text.Encoding.CodePages is registered at startup"
-                    },
-                    status=500
-                )
-            
             return routes.make_response(data={"error": str(e)}, status=500)
 
     logger.info("Code execution routes registered successfully.")
