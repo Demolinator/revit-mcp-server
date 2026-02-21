@@ -1,6 +1,6 @@
 # MCP server for Revit - Python
 
-## A pyRevit-oriented implementation of the Model Context Protocol (MCP) for Autodesk Revit
+## A pyRevit-oriented implementation of the Model Context Protocol (MCP) for Autodesk Revit 2024/2025/2026
 
 ## **How?**
 
@@ -49,32 +49,41 @@ It contains:
 ## **Supported Tools**
 
 
-### **Current Implementation Status**
+### **All 31 Tools — Implemented and Tested**
 
-| Tool Name | Status | Category | Description |
-|-----------|--------|----------|-------------|
-| `get_revit_status` | ✅ Implemented | Status & Connectivity | Check if the Revit-MCP API is active and responding |
-| `get_revit_model_info` | ✅ Implemented | Model Information | Get comprehensive information about the current Revit model |
-| `list_levels` | ✅ Implemented | Model Information | Get all levels with elevation information |
-| `get_revit_view` | ✅ Implemented | View & Image | Export a specific Revit view as an image |
-| `list_revit_views` | ✅ Implemented | View & Image | Get a list of all exportable views organized by type |
-| `place_family` | ✅ Implemented | Family & Placement | Place a family instance at specified location with custom properties |
-| `list_families` | ✅ Implemented | Family & Placement | Get a flat list of available family types (with filtering) |
-| `list_family_categories` | ✅ Implemented | Family & Placement | Get a list of all family categories in the model |
-| `get_current_view_info` | ✅ Implemented | View Information | Get detailed information about the currently active view |
-| `get_current_view_elements` | ✅ Implemented | View Information | Get all elements visible in the current view |
-| `create_point_based_element` | ✅ Implemented | Element Creation | Create point-based elements (doors, windows, furniture) |
-| `color_splash` | ✅ Implemented | Visualization | Color elements based on parameter values |
-| `execute_revit_code` | ✅ Implemented | Code Execution | Execute IronPython code directly in Revit context |
-| `get_selected_elements` | 🔄 Pending | Selection Management | Get information about currently selected elements |
-| `create_line_based_element` | 🔄 Pending | Element Creation | Create line-based elements (walls, beams, pipes) |
-| `create_surface_based_element` | 🔄 Pending | Element Creation | Create surface-based elements (floors, ceilings) |
-| `delete_elements` | 🔄 Pending | Element Management | Delete specified elements from the model |
-| `modify_element` | 🔄 Pending | Element Management | Modify element properties (instance parameters) |
-| `reset_model` | 🔄 Pending | Element Management | Reset model by deleting process model elements |
-| `tag_walls` | 🔄 Pending | Annotation | Tag all walls in the current view |
-| `search_modules` | 🔄 Pending | Integration | Search for available modules/addins |
-| `use_module` | 🔄 Pending | Integration | Execute functionality from external modules |
+| Tool Name | Category | Description |
+|-----------|----------|-------------|
+| `get_revit_status` | Status | Check if the Revit-MCP API is active and responding |
+| `get_revit_model_info` | Status | Get comprehensive information about the current Revit model |
+| `list_levels` | Model | Get all levels with elevation information |
+| `get_revit_view` | Views | Export a specific Revit view as an image |
+| `list_revit_views` | Views | Get a list of all exportable views organized by type |
+| `get_current_view_info` | Views | Get detailed information about the currently active view |
+| `get_current_view_elements` | Views | Get all elements visible in the current view |
+| `place_family` | Family | Place a family instance at specified location with custom properties |
+| `list_families` | Family | Get a flat list of available family types (with filtering) |
+| `list_family_categories` | Family | Get a list of all family categories in the model |
+| `list_category_parameters` | Color | List parameters available for a category |
+| `color_splash` | Color | Color elements based on parameter values |
+| `clear_colors` | Color | Reset element colors to default |
+| `create_level` | Building | Create new levels with elevations |
+| `create_line_based_element` | Building | Create walls, beams, and other line-based elements |
+| `create_surface_based_element` | Building | Create floors, roofs, and surface elements |
+| `create_grid` | Structure | Create column grid lines |
+| `create_structural_framing` | Structure | Create structural beams and framing |
+| `delete_elements` | Editing | Delete specified elements from the model |
+| `modify_element` | Editing | Modify element parameter values |
+| `get_selected_elements` | Editing | Get information about currently selected elements |
+| `create_dimensions` | Annotation | Create dimension annotations |
+| `tag_walls` | Annotation | Tag all walls in the current view |
+| `ai_element_filter` | Analysis | AI-powered element filtering by category and parameters |
+| `export_room_data` | Analysis | Export room areas, volumes, and boundaries |
+| `get_material_quantities` | Analysis | Material takeoff data |
+| `analyze_model_statistics` | Analysis | Element counts and model statistics |
+| `create_sheet` | Documentation | Create new drawing sheets |
+| `create_schedule` | Documentation | Create schedules with custom fields |
+| `export_document` | Documentation | Export views to PDF or image |
+| `execute_revit_code` | Advanced | Execute IronPython code directly in Revit context |
 
 
 ![Claude listing model elements in the Desktop interface](images/list_model_tool.png)
