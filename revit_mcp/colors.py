@@ -4,6 +4,7 @@ Color management functionality for Revit elements
 Provides tools for color splashing elements based on parameter values
 """
 
+from utils import get_element_id_value
 from pyrevit import routes, DB
 import json
 import logging
@@ -207,7 +208,7 @@ def get_parameter_value_safe(element, parameter_name):
             elif param.StorageType == DB.StorageType.ElementId:
                 elem_id = param.AsElementId()
                 if elem_id and elem_id != DB.ElementId.InvalidElementId:
-                    value = str(elem_id.IntegerValue)
+                    value = str(int(elem_id.Value))
                 else:
                     value = "No Value"
             else:
@@ -223,7 +224,7 @@ def get_parameter_value_safe(element, parameter_name):
         logger.debug(
             "Error getting parameter %s from element %s: %s",
             parameter_name,
-            element.Id.IntegerValue,
+            get_element_id_value(element),
             e,
         )
         return "No Value"
@@ -648,6 +649,9 @@ def color_elements_by_parameter(
                 element, parameter_name
             )
 
+            # Sanitize display_value for JSON safety
+            display_value = normalize_string(display_value)
+
             # Use display value as key for grouping
             parameter_groups[display_value].append(element)
 
@@ -851,7 +855,7 @@ def color_elements_by_parameter(
                     except Exception as e:
                         logger.warning(
                             "Failed to color element %s: %s",
-                            element.Id.IntegerValue,
+                            get_element_id_value(element),
                             e,
                         )
 
@@ -968,7 +972,7 @@ def clear_element_colors(doc, category_name):
                 except Exception as e:
                     logger.warning(
                         "Failed to clear colors for element %s: %s",
-                        element.Id.IntegerValue,
+                        get_element_id_value(element),
                         e,
                     )
 
@@ -1039,7 +1043,7 @@ def list_category_parameters(doc, category_name):
         # Get all parameters
         for param in sample_element.Parameters:
             try:
-                param_name = param.Definition.Name
+                param_name = normalize_string(param.Definition.Name)
                 storage_type = str(param.StorageType)
                 has_value = param.HasValue
 

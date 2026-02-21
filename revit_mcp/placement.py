@@ -4,7 +4,7 @@ Placement Module for Revit MCP
 Handles family placement and element creation functionality
 """
 
-from utils import get_element_name, find_family_symbol_safely
+from utils import get_element_name, find_family_symbol_safely, get_element_id_value
 from pyrevit import routes, revit, DB
 import json
 import traceback
@@ -195,7 +195,7 @@ def register_placement_routes(api):
 
                 logger.info(
                     "Family instance created with ID: {}".format(
-                        new_instance.Id.IntegerValue
+                        get_element_id_value(new_instance)
                     )
                 )
 
@@ -275,7 +275,7 @@ def register_placement_routes(api):
                 # Return information about the placed instance
                 response_data = {
                     "status": "success",
-                    "element_id": new_instance.Id.IntegerValue,
+                    "element_id": get_element_id_value(new_instance),
                     "family_name": family_name,
                     "type_name": type_name,
                     "requested_location": {"x": point.X, "y": point.Y, "z": point.Z},
@@ -323,7 +323,7 @@ def register_placement_routes(api):
                 if len(families) >= 50:
                     break
                 try:
-                    family_name = get_element_name(symbol)
+                    family_name = get_element_name(symbol.Family)
                     type_name = get_element_name(symbol)
                     category = symbol.Category.Name if symbol.Category else "Unknown"
                     is_active = symbol.IsActive
@@ -444,8 +444,9 @@ def register_placement_routes(api):
                     levels_info.append(
                         {
                             "name": level_name,
-                            "elevation": round(elevation, 2),
-                            "id": level.Id.IntegerValue,
+                            "elevation_mm": round(elevation * 304.8, 0),
+                            "elevation_feet": round(elevation, 4),
+                            "id": get_element_id_value(level),
                         }
                     )
 
@@ -454,7 +455,7 @@ def register_placement_routes(api):
                     continue
 
             # Sort by elevation
-            levels_info.sort(key=lambda x: x["elevation"])
+            levels_info.sort(key=lambda x: x["elevation_feet"])
 
             return routes.make_response(
                 data={
