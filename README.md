@@ -241,4 +241,4 @@ Contributions are welcome! Feel free to submit pull requests or open issues.
 
 ## License
 
-Apache-2.0
+MIT
