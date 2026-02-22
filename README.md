@@ -1,412 +1,244 @@
-# MCP server for Revit - Python
+# Revit MCP Server
 
-## A pyRevit-oriented implementation of the Model Context Protocol (MCP) for Autodesk Revit 2024/2025/2026
+MCP server for Autodesk Revit 2024/2025/2026 via pyRevit — 31 tools for building design, editing, analysis, and documentation.
 
-## **How?**
+Works with any MCP client: Claude Desktop, Claude Code, Cursor, Windsurf, Copilot, or any other MCP-compatible application.
 
-- This minimal implementation leverages the Routes module inside pyRevit to create a bridge between Revit and Large Language Models (LLMs).
-- It provides a straightforward template to get started quickly, letting you prototype and iterate tools to give LLMs access to your Revit models.
-- These tools are designed to be expanded for your specific use cases. You're very welcome to fork the repo and make your own contributions.
-- **Note:** The pyRevit Routes API is currently in draft form and subject to change. It lacks built-in authentication mechanisms, so you'll need to implement your own security measures for production use.
+## How It Works
 
-## **Batteries Included**
+```
+AI Client ──stdio/SSE/HTTP──> MCP Server (Python/FastMCP) ──HTTP :48884──> pyRevit Routes ──> Revit API
+```
 
-This repo is aimed at:
-- Beginners to the Revit API
-- Python specialists who aren't versed in C#
-- Anyone wanting to prototype and iterate quickly with LLMs and Revit
+The MCP server runs on your machine and communicates with Revit through pyRevit's Routes API. Any MCP-compatible AI client can connect to it.
 
-It contains:
-- A complete Routes implementation for pyRevit
-- A minimal MCP server script to connect to any MCP-compatible client
-- Several test commands to get you started right away
+## Prerequisites
 
-## Key Architecture Components
+| Requirement | Details |
+|-------------|---------|
+| **Windows 10/11** | Revit is Windows-only |
+| **Autodesk Revit** | 2024, 2025, or 2026 |
+| **pyRevit** | Installed and loaded in Revit |
+| **uv** | Python package manager ([install](https://docs.astral.sh/uv/getting-started/installation/)) |
+| **A project open in Revit** | Tools require an active document |
 
+## Quick Start
 
-1.  **MCP Server (`main.py`)**:
+### Step 1: Clone and install
 
-- Built with FastMCP
-- Handles HTTP communication with Revit Routes API
-- Registers tools from modular tool system
-- Provides helper functions for GET/POST/Image requests
+```bash
+git clone https://github.com/Demolinator/revit-mcp-server.git
+cd revit-mcp-server
+uv sync
+```
 
-2.  **pyRevit Extension (`revit-mcp-python.extension/`)**:
+### Step 2: Install the pyRevit extension
 
-- Contains the Routes API that runs inside Revit
-- Modular route registration in `startup.py`
-- Individual route modules in `revit_mcp/` directory
+The `revit_mcp/` folder and `startup.py` need to run inside Revit via pyRevit.
 
-3.  **Tool Registration System (`tools/`)**:
+**Option A — Install from pyRevit (recommended):**
 
-- Modular tool organization by functionality
-- Central registration through `tools/__init__.py`
-- Each module registers its own tools with the MCP server
+1. In Revit, go to pyRevit tab > Extensions
+2. Find "MCP Server for Revit Python" > Install
+3. Wait for pyRevit to reload
 
+**Option B — Manual install:**
 
----
+1. Copy the entire repo folder to `%APPDATA%\pyRevit\Extensions\`
+2. Rename the folder to `mcp-server-for-revit-python.extension`
+3. In Revit, go to pyRevit tab > Settings > Custom Extensions
+4. Add the path to the `.extension` folder
+5. Reload pyRevit (or restart Revit)
 
-## **Supported Tools**
+### Step 3: Activate pyRevit Routes
 
+1. In Revit, go to pyRevit tab > Settings
+2. Navigate to Routes > activate **Routes Server**
+3. pyRevit will start listening on `http://localhost:48884/`
 
-### **All 31 Tools — Implemented and Tested**
+### Step 4: Verify connection
 
-| Tool Name | Category | Description |
-|-----------|----------|-------------|
-| `get_revit_status` | Status | Check if the Revit-MCP API is active and responding |
-| `get_revit_model_info` | Status | Get comprehensive information about the current Revit model |
-| `list_levels` | Model | Get all levels with elevation information |
-| `get_revit_view` | Views | Export a specific Revit view as an image |
-| `list_revit_views` | Views | Get a list of all exportable views organized by type |
-| `get_current_view_info` | Views | Get detailed information about the currently active view |
-| `get_current_view_elements` | Views | Get all elements visible in the current view |
-| `place_family` | Family | Place a family instance at specified location with custom properties |
-| `list_families` | Family | Get a flat list of available family types (with filtering) |
-| `list_family_categories` | Family | Get a list of all family categories in the model |
-| `list_category_parameters` | Color | List parameters available for a category |
-| `color_splash` | Color | Color elements based on parameter values |
-| `clear_colors` | Color | Reset element colors to default |
-| `create_level` | Building | Create new levels with elevations |
-| `create_line_based_element` | Building | Create walls, beams, and other line-based elements |
-| `create_surface_based_element` | Building | Create floors, roofs, and surface elements |
-| `create_grid` | Structure | Create column grid lines |
-| `create_structural_framing` | Structure | Create structural beams and framing |
-| `delete_elements` | Editing | Delete specified elements from the model |
-| `modify_element` | Editing | Modify element parameter values |
-| `get_selected_elements` | Editing | Get information about currently selected elements |
-| `create_dimensions` | Annotation | Create dimension annotations |
-| `tag_walls` | Annotation | Tag all walls in the current view |
-| `ai_element_filter` | Analysis | AI-powered element filtering by category and parameters |
-| `export_room_data` | Analysis | Export room areas, volumes, and boundaries |
-| `get_material_quantities` | Analysis | Material takeoff data |
-| `analyze_model_statistics` | Analysis | Element counts and model statistics |
-| `create_sheet` | Documentation | Create new drawing sheets |
-| `create_schedule` | Documentation | Create schedules with custom fields |
-| `export_document` | Documentation | Export views to PDF or image |
-| `execute_revit_code` | Advanced | Execute IronPython code directly in Revit context |
+Open a browser and go to:
 
+```
+http://localhost:48884/revit_mcp/status/
+```
 
-![Claude listing model elements in the Desktop interface](images/list_model_tool.png)
+You should see:
 
-![Claude getting a view in the Desktop interface](images/get_view_tool.png)
+```json
+{
+  "status": "active",
+  "health": "healthy",
+  "revit_available": true,
+  "document_title": "your_project_name",
+  "api_name": "revit_mcp"
+}
+```
 
+### Step 5: Start the MCP server
 
-## Getting Started
+```bash
+uv run main.py
+```
 
-### Installing uv:
+That's it. Your AI client can now connect.
 
-> Refer to ./README_UV.md
+## Connecting Your AI Client
 
-## Installing the Extension on Revit
+### Claude Desktop / Claude Code
 
-# Activate pyRevit Routes
+Add to your MCP config:
 
-1. In Revit, navigate to the pyRevit tab
-2. Open Settings
-3. Go to `Routes` > activate `Routes Server`
-pyRevit will start listening on port `http://localhost:48884/`
+```json
+{
+  "mcpServers": {
+    "revit": {
+      "command": "uv",
+      "args": ["run", "main.py"],
+      "cwd": "/path/to/revit-mcp-server"
+    }
+  }
+}
+```
 
-# Install from pyRevit:
+### Cursor / Windsurf / Other MCP Clients
 
-1. In Revit, navigate to the pyRevit tab
-2. Open Extensions
-3. Select the MCP Server for Revit Python Extension > Install extension
-4. Select location, default is `%APPDATA%\Roaming\pyRevit\Extensions`
-5. Enable and wait for pyRevit to reload. Restart Revit if necessary.
+Use HTTP transport:
 
+```bash
+uv run main.py --streamable-http
+```
 
-# Manual Installation on a custom directory:
+Then configure your client to connect to `http://localhost:8000/mcp`.
 
-1. Clone the repo in a custom location:
-    ```bash
-    git clone https://github.com/mcp-servers-for-revit/mcp-server-for-revit-python
-    ```
-2. Add `.extension` to the root folder name
-3. In Revit, navigate to the pyRevit tab
-4. Open Settings
-5. Under "Custom Extensions", add the path to the `.extension` folder
-6. Save settings and reload pyRevit (you might need to restart Revit entirely)
+### Transport Modes
 
-## Testing Your Connection
+| Flag | Transport | Endpoints | Use Case |
+|------|-----------|-----------|----------|
+| *(none)* | stdio | stdin/stdout | Claude Desktop / Claude Code |
+| `--sse` | SSE | `/sse`, `/messages/` | Legacy clients |
+| `--streamable-http` | HTTP | `/mcp` | HTTP-based clients |
+| `--combined` | Both | All above | Maximum compatibility |
 
-Once installed, test that the Routes API is working:
-
-1. Open your web browser and go to:
-   ```
-   http://localhost:48884/revit_mcp/status/
-   ```
-
-2. If successful, you should see a response like:
-   ```json
-   {"status": "active",
-    "health": "healthy",
-    "revit_available": true,
-    "document_title": "your_revit_filename",
-    "api_name": "revit_mcp"}
-   ```
-
-The Routes Service will now load automatically whenever you start Revit. To disable it, simply remove the extension path from the pyRevit settings.
-
-## Using the MCP Client
-
-### Testing with the MCP Inspector
-
-The MCP SDK includes a handy inspector tool for debugging:
+### Testing with MCP Inspector
 
 ```bash
 mcp dev main.py
 ```
 
-Then access `http://127.0.0.1:6274` in your browser to test your MCP server interactively.
+Then open `http://127.0.0.1:6274` in your browser.
 
-### Transport Modes
+## Supported Tools (31)
 
-The MCP server supports multiple transport modes for different use cases:
+### Create (8)
 
-| Flag | Transport | Endpoints | Use Case |
-|------|-----------|-----------|----------|
-| (none) | stdio | stdin/stdout | Claude Desktop default |
-| `--sse` | SSE only | `/sse`, `/messages/` | Legacy clients |
-| `--streamable-http` | HTTP only | `/mcp` | Modern HTTP clients |
-| `--combined` | Both | All above | Maximum compatibility |
+| Tool | Description |
+|------|-------------|
+| `create_level` | Create new levels with elevations |
+| `create_line_based_element` | Create walls, beams, and other line-based elements |
+| `create_surface_based_element` | Create floors, roofs, and surface elements |
+| `place_family` | Place a family instance at specified location |
+| `create_grid` | Create column grid lines |
+| `create_structural_framing` | Create structural beams and framing |
+| `create_sheet` | Create new drawing sheets |
+| `create_schedule` | Create schedules with custom fields |
 
-**Running with combined transport (recommended for HTTP):**
-```bash
-uv run --with "mcp[cli]" main.py --combined
-```
+### Query (11)
 
-This starts the server on `http://127.0.0.1:8000` with both SSE and streamable-HTTP endpoints available.
+| Tool | Description |
+|------|-------------|
+| `get_revit_status` | Check if the API is active and responding |
+| `get_revit_model_info` | Get model information |
+| `list_levels` | Get all levels with elevations |
+| `list_families` | Get available family types |
+| `list_family_categories` | Get all family categories |
+| `get_revit_view` | Export a view as an image |
+| `list_revit_views` | List all exportable views |
+| `get_current_view_info` | Get active view details |
+| `get_current_view_elements` | Get elements in current view |
+| `get_selected_elements` | Get currently selected elements |
+| `list_category_parameters` | List parameters for a category |
 
-**Testing the endpoints:**
-```bash
-# Test streamable-http
-curl -X POST http://localhost:8000/mcp
+### Modify (4)
 
-# Test SSE
-curl http://localhost:8000/sse
-```
+| Tool | Description |
+|------|-------------|
+| `delete_elements` | Delete elements from the model |
+| `modify_element` | Modify element parameter values |
+| `color_splash` | Color elements by parameter values |
+| `clear_colors` | Reset element colors |
 
-### Connecting to Claude Desktop
+### Analyze (4)
 
-The simplest way to install your MCP server in Claude Desktop:
+| Tool | Description |
+|------|-------------|
+| `ai_element_filter` | Filter elements by category and parameters |
+| `export_room_data` | Export room areas, volumes, boundaries |
+| `get_material_quantities` | Material takeoff data |
+| `analyze_model_statistics` | Element counts and model stats |
 
-```bash
-mcp install main.py
-```
+### Document (3)
 
-Or for manual installation:
+| Tool | Description |
+|------|-------------|
+| `create_dimensions` | Create dimension annotations |
+| `tag_walls` | Tag all walls in current view |
+| `export_document` | Export views to PDF or image |
 
-1. Open Claude Desktop → Settings → Developer → Edit Config
-2. Add this to the `mcpServers` section:
+### Advanced (1)
 
-```json
-{
-  "mcpServers": {
-    "Revit Connector": {
-      "command": "uv",
-      "args": [
-        "run",
-        "--with",
-        "mcp[cli]",
-        "mcp",
-        "run",
-        "/absolute/path/to/main.py"
-      ]
-    }
-  }
-}
-```
+| Tool | Description |
+|------|-------------|
+| `execute_revit_code` | Execute IronPython code in Revit context |
 
-For HTTP transport mode, configure Claude Desktop with:
-```json
-{
-  "mcpServers": {
-    "Revit Connector": {
-      "url": "http://localhost:8000/mcp"
-    }
-  }
-}
-```
+## Architecture
 
-# Creating Your Own Tools
+Two runtimes communicate over HTTP:
 
-The modular architecture of this project makes adding functionalities relatively simple. The provided LLM.txt file also gives your language model the necessary context to get started right away.
+| Component | Runtime | Location | Purpose |
+|-----------|---------|----------|---------|
+| `main.py` + `tools/` | Python 3.11+ (CPython) | Your machine | MCP protocol, tool definitions |
+| `startup.py` + `revit_mcp/` | IronPython 2.7 (inside Revit) | Revit process | pyRevit route handlers, Revit API |
 
-The process involves three main parts:
+## Multi-Version Revit Support
 
-## Part 1: Create the Route Module in Revit
+This server supports Revit 2024, 2025, and 2026 through centralized helper functions that handle the ElementId API differences across versions:
 
-Create a new Python file within the `revit-mcp-python.extension/revit_mcp/` directory (e.g., `revit_mcp/your_module.py`). This module will contain all the related functions you want to expose.
+- `get_element_id_value()` — Extracts integer IDs using `.Value` (2024+) with `.IntegerValue` fallback
+- `make_element_id()` — Creates ElementIds using `System.Int64` (2024+) with `int` fallback
 
-```python
-# In revit-mcp-python.extension/revit_mcp/your_module.py
+No configuration needed — version detection is automatic via try/except at runtime.
 
-# -*- coding: UTF-8 -*-
-"""
-Your Module for Revit MCP
-Handles your specific functionality.
-"""
-from pyrevit import routes, revit, DB
-import json
-import logging
+## Unit Handling
 
-# Standard logger setup
-logger = logging.getLogger(__name__)
+All tools accept **millimeters (mm)**. The server converts to Revit's internal feet.
 
-def register_your_routes(api):
-    """Register all your routes with the API."""
-    
-    # ---- Example 1: A GET request for reading data ----
-    @api.route('/your_endpoint/', methods=["GET"])
-    def get_project_title(doc):
-        """Gets the project title from the Revit model."""
-        try:
-            value = doc.Title
-            return routes.make_response(data={"status": "success", "data": value})
-        except Exception as e:
-            logger.error("Get project title failed: {}".format(str(e)))
-            return routes.make_response(data={"error": str(e)}, status=500)
-    
-    # ---- Example 2: A POST request for modifying the model ----
-    @api.route('/modify_model/', methods=["POST"])
-    def modify_model(doc, request):
-        """Handles POST requests for modifying the Revit model."""
-        try:
-            data = json.loads(request.data) if isinstance(request.data, str) else request.data
-            
-            # Use a transaction for all model modifications
-            t = DB.Transaction(doc, "Modify Model via MCP")
-            t.Start()
-            
-            try:
-                element_id = data.get("element_id")
-                new_value = data.get("new_value")
-                element = doc.GetElement(DB.ElementId(int(element_id)))
-                param = element.LookupParameter("Comments")
-                param.Set(new_value)
-                
-                t.Commit()
-                return routes.make_response(data={"status": "success", "result": "Element modified."})
-            
-            except Exception as tx_error:
-                if t.HasStarted() and not t.HasEnded():
-                    t.RollBack()
-                raise tx_error
-                
-        except Exception as e:
-            logger.error("Modify model failed: {}".format(str(e)))
-            return routes.make_response(data={"error": str(e)}, status=500)
-    
-    logger.info("Your custom routes were registered successfully.")
-```
+| From | To mm |
+|------|-------|
+| meters | x 1000 |
+| feet | x 304.8 |
+| inches | x 25.4 |
 
-## Part 2: Create the MCP Tool Module
+## Creating Your Own Tools
 
-Create the corresponding tools for the MCP server in the `tools/` directory (e.g., `tools/your_tools.py`). This module will use the `revit_get` and `revit_post` helpers from `main.py`.
+Adding a new tool requires 2 files + 2 registration lines:
 
-```python
-# In tools/your_tools.py
-# -*- coding: utf-8 -*-
-"""Your tools for the MCP server."""
+1. **Route handler** in `revit_mcp/new_module.py` (IronPython 2.7)
+2. **Tool definition** in `tools/new_tools.py` (Python 3.11+)
+3. **Register routes** in `startup.py`
+4. **Register tools** in `tools/__init__.py`
 
-from mcp.server.fastmcp import Context
-from .utils import format_response
-
-def register_your_tools(mcp, revit_get, revit_post, revit_image=None):
-    """Register your tools with the MCP server."""
-    
-    # ---- Tool for the GET request ----
-    @mcp.tool()
-    async def get_revit_project_title(ctx: Context) -> str:
-        """
-        Retrieves the title of the currently open Revit project.
-        """
-        response = await revit_get("/your_endpoint/", ctx)
-        return format_response(response)
-    
-    # ---- Tool for the POST request ----
-    @mcp.tool()
-    async def modify_revit_element_comment(
-        element_id: int,
-        new_value: str,
-        ctx: Context = None
-    ) -> str:
-        """
-        Modifies the 'Comments' parameter of a specific element.
-        
-        Args:
-            element_id: The ID of the element to modify.
-            new_value: The new comment to apply to the element.
-        """
-        payload = {"element_id": element_id, "new_value": new_value}
-        response = await revit_post("/modify_model/", payload, ctx)
-        return format_response(response)
-```
-
-## Part 3: Register Your New Modules
-
-### 1. Register the Route Module
-
-Open `revit-mcp-python.extension/startup.py` and add your new route registration function.
-
-```python
-# In revit-mcp-python.extension/startup.py
-
-# ... (other imports)
-# Import the registration function from your new module
-from revit_mcp.your_module import register_your_routes
-
-def register_routes():
-    """Register all MCP route modules"""
-    api = routes.API('revit_mcp')
-    try:
-        # ... (existing route registrations)
-        
-        # Register your new routes (this registers all functions inside)
-        register_your_routes(api)
-        
-        logger.info("All MCP routes registered successfully")
-    except Exception as e:
-        logger.error("Failed to register MCP routes: {}".format(str(e)))
-        raise
-```
-
-### 2. Register the Tool Module
-
-Open `tools/__init__.py` and add your new tool registration function.
-
-```python
-# In tools/__init__.py
-
-# ... (other tool imports)
-# Import the registration function from your new tool module
-from .your_tools import register_your_tools
-
-def register_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func):
-    """Register all tools with the MCP server"""
-    
-    # ... (existing tool registrations)
-    # Register your new tools (this registers all tools inside)
-    register_your_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    
-    return mcp_server
-```
-
-
-## Roadmap
-
-This is a work in progress and more of a demonstration than a fully-featured product. Future improvements could include:
-
-- **Creating a Client inside Revit**
-- **Implementing compatibilities with other language Models**
-- **Authentication and security enhancements**
-- **More advanced Revit tools and capabilities**
-- **Better error handling and debugging features**
-- **Benchmarking with local models**
-- **Documentation and examples for common use cases**
-- **...**
+See `LLM.txt` for full context that helps AI assistants understand the codebase.
 
 ## Contributing
 
-Contributions are welcome! Feel free to submit pull requests or open issues for any bugs or feature requests.
-Feel free to reach out to me if you have any questions, ideas
+Contributions are welcome! Feel free to submit pull requests or open issues.
+
+## Author
+
+**Talal Ahmed** | Mentor: **Sir Zia Khan**
+
+## License
+
+Apache-2.0
