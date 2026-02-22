@@ -237,7 +237,7 @@ Contributions are welcome! Feel free to submit pull requests or open issues.
 
 ## Author
 
-**Talal Ahmed** | Mentor: **Sir Zia Khan**
+**Talal Ahmed**
 
 ## License
 
