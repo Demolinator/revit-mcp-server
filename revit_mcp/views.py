@@ -427,7 +427,7 @@ def register_views_routes(api):
                             if level_id != DB.ElementId.InvalidElementId:
                                 level_elem = doc.GetElement(level_id)
                                 element_info["level"] = get_element_name(level_elem)
-                                element_info["level_id"] = int(level_id.Value)
+                                element_info["level_id"] = get_element_id_value(level_id)
                             else:
                                 element_info["level"] = None
                                 element_info["level_id"] = None

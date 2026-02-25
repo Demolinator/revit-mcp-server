@@ -20,14 +20,20 @@ This implementation uses a **modular architecture** that separates concerns and 
 revit-mcp-python/
 ├── main.py                                    # MCP Server (FastMCP implementation)
 ├── tools/                                     # MCP Tool definitions (organized by functionality)
-│   ├── __init__.py                           # Tool registration system
+│   ├── __init__.py                           # Tool registration system (12 modules)
 │   ├── utils.py                              # Utility functions for response formatting
 │   ├── status_tools.py                       # Status and connectivity tools
 │   ├── model_tools.py                        # Model information tools
 │   ├── view_tools.py                         # View export and image tools
 │   ├── family_tools.py                       # Family placement and management tools
 │   ├── colors_tools.py                       # Color splashing tools
-│   └── code_execution_tools.py               # Code execution tools
+│   ├── code_execution_tools.py               # Code execution tools
+│   ├── building_tools.py                     # Building creation (walls, floors, roofs, levels)
+│   ├── editing_tools.py                      # Element editing (delete, modify, select)
+│   ├── structure_tools.py                    # Structural (grids, framing)
+│   ├── annotation_tools.py                   # Annotation (dimensions, wall tags)
+│   ├── analysis_tools.py                     # Analysis (filter, rooms, materials, statistics)
+│   └── documentation_tools.py                # Documentation (sheets, schedules, export)
 ├── revit-mcp-python.extension/               # pyRevit Extension
 │   ├── startup.py                            # Extension entry point - registers all routes
 │   └── revit_mcp/                            # Routes API modules (organized by functionality)
@@ -36,9 +42,15 @@ revit-mcp-python/
 │       ├── model_info.py                     # Model information endpoints
 │       ├── views.py                          # View export endpoints
 │       ├── placement.py                      # Family placement endpoints
-│       └── utils.py                          # Utility functions for IronPython compatibility
-│       └── colors.py                         # Color splashing endpoints
-│       └── code_execution.py                 # Code execution endpoints
+│       ├── utils.py                          # Utility functions for IronPython compatibility
+│       ├── colors.py                         # Color splashing endpoints
+│       ├── code_execution.py                 # Code execution endpoints
+│       ├── building.py                       # Building creation routes (walls, floors, roofs, levels)
+│       ├── editing.py                        # Element editing routes (delete, modify, select)
+│       ├── structure.py                      # Structural routes (grids, framing)
+│       ├── annotation.py                     # Annotation routes (dimensions, wall tags)
+│       ├── analysis.py                       # Analysis routes (filter, rooms, materials, statistics)
+│       └── documentation.py                  # Documentation routes (sheets, schedules, export)
 ├── requirements.txt                          # Python dependencies
 ├── pyproject.toml                           # Project configuration
 └── README.md                                # Project documentation
@@ -409,48 +421,64 @@ It contains:
 
 ---
 
-## **Available Tools** | 
+## **Available Tools** |
 
-The current implementation provides these tools organized by category:
+The implementation provides 31 tools organized by category:
 
-### **Status & Connectivity Tools**
+### **Status & Connectivity Tools (2)**
 - **get_revit_status**: Check if the Revit MCP API is active and responding
 - **get_revit_model_info**: Get comprehensive information about the current Revit model
 
-### **Model Information Tools**  
+### **Model Information Tools (1)**
 - **list_levels**: Get all levels with elevation information in the current Revit model
 
-### **View & Image Tools**
+### **View & Image Tools (4)**
 - **get_revit_view**: Export a specific Revit view as an image
-  - Takes view_name parameter
-  - Returns PNG image data
-  - Supports all exportable view types
 - **list_revit_views**: Get a list of all exportable views in the current Revit model
-  - Organized by view type (floor plans, sections, 3D views, etc.)
+- **get_current_view_info**: Get details about the active Revit view
+- **get_current_view_elements**: Get all elements visible in the current view
 
-### **Family & Placement Tools**
-- **place_family**: Place a family instance at a specified location in the Revit model
-  - Parameters: family_name, type_name, x, y, z, rotation, level_name, properties
-  - Supports detailed placement with custom properties
-- **list_families**: Get a flat list of available family types in the current Revit model
-  - Parameters: contains (filter), limit (max results)
-- **list_family_categories**: Get a list of all family categories in the current Revit model
+### **Family & Placement Tools (3)**
+- **place_family**: Place a family instance at a specified location
+- **list_families**: Get available family types, optionally filtered
+- **list_family_categories**: Get all family categories in the model
 
-### **Code Execution Tools**
-- **execute_revit_code**: Execute IronPython code directly in Revit context
-  - Parameters: code (string), description (optional)
-  - Provides access to doc, DB, revit modules
-  - Returns execution output and any print statements
-  - Handles transactions automatically for model modifications
-  - Use when existing MCP tools cannot accomplish the needed functionality
+### **Building Creation Tools (3)**
+- **create_level**: Create building levels (floor elevations) — must be done before walls/floors
+- **create_line_based_element**: Create walls, beams, and other line-based elements (batch)
+- **create_surface_based_element**: Create floors, roofs, ceilings (batch, closed boundary polygon)
 
-### **Color Splashing Tools**
-- **splash_color**: Apply a color to all elements of a specific category in the Revit model
-  - Parameters: category_name, color (RGB tuple)
-  - Useful for visualizing categories in the model
-- **clear_colors**: Remove all color overrides from elements of a specific category
-  - Parameters: category_name
-- This tool may have performance implications for large models.
+### **Editing Tools (3)**
+- **delete_elements**: Delete elements by ID, reports cascaded deletions (hosted elements)
+- **modify_element**: Change parameter values on a Revit element
+- **get_selected_elements**: Get details of elements selected in the Revit UI
+
+### **Structure Tools (2)**
+- **create_grid**: Create grid lines for structural column layout (batch)
+- **create_structural_framing**: Create structural beams and framing elements (batch)
+
+### **Annotation Tools (2)**
+- **create_dimensions**: Create dimension annotations for elements in the current view
+- **tag_walls**: Tag all untagged walls in the current view
+
+### **Analysis Tools (4)**
+- **ai_element_filter**: Filter elements by category, type, visibility, and spatial bounds
+- **export_room_data**: Export room names, numbers, areas, perimeters, departments
+- **get_material_quantities**: Get aggregated material areas and volumes for takeoffs
+- **analyze_model_statistics**: Get element counts grouped by category
+
+### **Documentation Tools (3)**
+- **create_sheet**: Create a drawing sheet with title block for construction docs
+- **create_schedule**: Create a schedule (quantity takeoff view) for a category
+- **export_document**: Export a view/sheet to PDF, PNG, JPG, or DWG
+
+### **Color Tools (3)**
+- **color_splash**: Color elements by category and parameter value
+- **clear_colors**: Remove all color overrides from a category
+- **list_category_parameters**: Get available parameters for elements in a category
+
+### **Code Execution Tools (1)**
+- **execute_revit_code**: Execute IronPython 2.7 code directly in Revit context (escape hatch)
 
 ---
 
@@ -460,29 +488,54 @@ The pyRevit extension exposes these HTTP endpoints under `http://localhost:48884
 
 ### **Status Endpoints**
 - `GET /status/` - Health check and API status
-
-### **Model Information Endpoints**  
 - `GET /model_info/` - Comprehensive model information
-- `GET /list_levels/` - Get all levels with elevation information
 
-### **View Endpoints**
+### **Model & View Endpoints**
+- `GET /list_levels/` - Get all levels with elevation information
 - `GET /get_view/<view_name>` - Export specific view as PNG image
 - `GET /list_views/` - Get all exportable views organized by type
+- `GET /current_view_info/` - Get active view details
+- `GET /current_view_elements/` - Get elements visible in active view
 
-### **Placement Endpoints**
+### **Family & Placement Endpoints**
 - `POST /place_family/` - Place family instance with detailed parameters
-- `GET /list_families/` - Get available families and types (supports contains/limit params)
+- `GET /list_families/` - Get available families and types
 - `GET /list_family_categories/` - Get family categories with counts
 
-### **Code Execution Endpoints**
-- `POST /execute_code/` - Execute IronPython code in Revit context
-  - Parameters: code (string), description (optional)
-  - Handles transactions automatically for model modifications
-  - Use when existing MCP tools cannot accomplish the needed functionality
+### **Building Creation Endpoints**
+- `POST /create_level/` - Create building levels
+- `POST /create_line/` - Create walls, beams (line-based elements)
+- `POST /create_surface/` - Create floors, roofs, ceilings (surface-based elements)
 
-### **Color Splashing Endpoints**
-- `POST /splash_color/` - Apply color to all elements of a specific category
-  - Parameters: category_name, color (RGB tuple)
+### **Editing Endpoints**
+- `POST /delete_elements/` - Delete elements by ID (cascade-deletes hosted elements)
+- `POST /modify_element/` - Modify element parameter values
+- `GET /selected_elements/` - Get currently selected elements
+
+### **Structure Endpoints**
+- `POST /create_grid/` - Create grid lines
+- `POST /create_framing/` - Create structural beams
+
+### **Annotation Endpoints**
+- `POST /create_dimensions/` - Create dimension annotations
+- `POST /tag_walls/` - Tag all untagged walls in view
+
+### **Analysis Endpoints**
+- `POST /ai_filter/` - Filter elements by category, type, visibility, spatial bounds
+- `GET /room_data/` - Export room data (names, areas, perimeters)
+- `POST /material_quantities/` - Get material quantities (areas, volumes)
+- `GET /model_statistics/` - Get element counts by category
+
+### **Documentation Endpoints**
+- `POST /create_sheet/` - Create drawing sheet
+- `POST /create_schedule/` - Create schedule view
+- `POST /export_document/` - Export view to PDF/PNG/JPG/DWG
+
+### **Color & Code Endpoints**
+- `POST /color_splash/` - Color elements by parameter value
+- `POST /clear_colors/` - Remove color overrides
+- `POST /list_category_parameters/` - Get available parameters for a category
+- `POST /execute_code/` - Execute IronPython code in Revit context
 
 ---
 

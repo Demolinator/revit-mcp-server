@@ -1,6 +1,6 @@
 # Revit MCP Server
 
-MCP server for Autodesk Revit 2024/2025/2026 via pyRevit — 31 tools for building design, editing, analysis, and documentation.
+MCP server for Autodesk Revit 2024/2025/2026 via pyRevit — 45 tools for building design, editing, analysis, MEP, interop, and documentation.
 
 Works with any MCP client: Claude Desktop, Claude Code, Cursor, Windsurf, Copilot, or any other MCP-compatible application.
 
@@ -129,9 +129,9 @@ mcp dev main.py
 
 Then open `http://127.0.0.1:6274` in your browser.
 
-## Supported Tools (31)
+## Supported Tools (45)
 
-### Create (8)
+### Create (15)
 
 | Tool | Description |
 |------|-------------|
@@ -143,8 +143,15 @@ Then open `http://127.0.0.1:6274` in your browser.
 | `create_structural_framing` | Create structural beams and framing |
 | `create_sheet` | Create new drawing sheets |
 | `create_schedule` | Create schedules with custom fields |
+| `create_room` | Create rooms at specified levels |
+| `create_room_separation` | Create room separation boundary lines |
+| `create_duct` | Create ducts between two points (MEP) |
+| `create_pipe` | Create pipes between two points (MEP) |
+| `create_mep_system` | Create mechanical or piping systems |
+| `create_detail_line` | Create view-specific detail lines |
+| `create_view` | Create floor plans, sections, elevations, 3D views |
 
-### Query (11)
+### Query (12)
 
 | Tool | Description |
 |------|-------------|
@@ -159,8 +166,9 @@ Then open `http://127.0.0.1:6274` in your browser.
 | `get_current_view_elements` | Get elements in current view |
 | `get_selected_elements` | Get currently selected elements |
 | `list_category_parameters` | List parameters for a category |
+| `get_element_properties` | Get all parameters and properties of an element |
 
-### Modify (4)
+### Modify (8)
 
 | Tool | Description |
 |------|-------------|
@@ -168,6 +176,11 @@ Then open `http://127.0.0.1:6274` in your browser.
 | `modify_element` | Modify element parameter values |
 | `color_splash` | Color elements by parameter values |
 | `clear_colors` | Reset element colors |
+| `tag_walls` | Tag all walls in current view |
+| `set_parameter` | Set a single parameter value on an element |
+| `tag_elements` | Tag specific elements with annotation symbols |
+| `transform_elements` | Move, copy, rotate, or mirror elements |
+| `set_active_view` | Switch the active view in Revit |
 
 ### Analyze (4)
 
@@ -183,8 +196,14 @@ Then open `http://127.0.0.1:6274` in your browser.
 | Tool | Description |
 |------|-------------|
 | `create_dimensions` | Create dimension annotations |
-| `tag_walls` | Tag all walls in current view |
 | `export_document` | Export views to PDF or image |
+
+### Interop (2)
+
+| Tool | Description |
+|------|-------------|
+| `export_ifc` | Export model to IFC format (IFC2x3/IFC4) |
+| `link_file` | Link or import DWG, DXF, DGN, or RVT files |
 
 ### Advanced (1)
 

@@ -284,7 +284,7 @@ def register_annotation_routes(api):
             for tag in existing_tags:
                 try:
                     if hasattr(tag, "TaggedLocalElementId"):
-                        tagged_wall_ids.add(int(tag.TaggedLocalElementId.Value))
+                        tagged_wall_ids.add(get_element_id_value(tag.TaggedLocalElementId))
                 except Exception:
                     continue
 

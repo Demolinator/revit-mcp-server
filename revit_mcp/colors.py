@@ -208,7 +208,7 @@ def get_parameter_value_safe(element, parameter_name):
             elif param.StorageType == DB.StorageType.ElementId:
                 elem_id = param.AsElementId()
                 if elem_id and elem_id != DB.ElementId.InvalidElementId:
-                    value = str(int(elem_id.Value))
+                    value = str(get_element_id_value(elem_id))
                 else:
                     value = "No Value"
             else:

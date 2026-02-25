@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import sys
 import httpx
 import anyio
@@ -17,7 +18,7 @@ mcp = FastMCP(
 )
 
 # Configuration
-REVIT_HOST = "localhost"
+REVIT_HOST = os.environ.get("REVIT_HOST", "localhost")
 REVIT_PORT = 48884  # Default pyRevit Routes port
 BASE_URL = f"http://{REVIT_HOST}:{REVIT_PORT}/revit_mcp"
 

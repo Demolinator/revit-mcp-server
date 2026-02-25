@@ -41,6 +41,62 @@ def register_routes():
 
         register_code_execution_routes(api)
 
+        from revit_mcp.building import register_building_routes
+
+        register_building_routes(api)
+
+        from revit_mcp.editing import register_editing_routes
+
+        register_editing_routes(api)
+
+        from revit_mcp.structure import register_structure_routes
+
+        register_structure_routes(api)
+
+        from revit_mcp.annotation import register_annotation_routes
+
+        register_annotation_routes(api)
+
+        from revit_mcp.analysis import register_analysis_routes
+
+        register_analysis_routes(api)
+
+        from revit_mcp.documentation import register_documentation_routes
+
+        register_documentation_routes(api)
+
+        from revit_mcp.rooms import register_room_routes
+
+        register_room_routes(api)
+
+        from revit_mcp.view_management import register_view_management_routes
+
+        register_view_management_routes(api)
+
+        from revit_mcp.tags import register_tag_routes
+
+        register_tag_routes(api)
+
+        from revit_mcp.transforms import register_transform_routes
+
+        register_transform_routes(api)
+
+        from revit_mcp.mep import register_mep_routes
+
+        register_mep_routes(api)
+
+        from revit_mcp.parameters import register_parameter_routes
+
+        register_parameter_routes(api)
+
+        from revit_mcp.interop import register_interop_routes
+
+        register_interop_routes(api)
+
+        from revit_mcp.detail import register_detail_routes
+
+        register_detail_routes(api)
+
         logger.info("All MCP routes registered successfully")
 
     except Exception as e:

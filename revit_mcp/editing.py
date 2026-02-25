@@ -4,7 +4,7 @@ Editing Module for Revit MCP
 Handles element deletion, modification, and selection retrieval
 """
 
-from utils import get_element_name, make_element_id
+from utils import get_element_name, make_element_id, get_element_id_value
 from pyrevit import routes, revit, DB
 import json
 import traceback
@@ -62,13 +62,13 @@ def register_editing_routes(api):
                 for elem_id in elements_to_delete:
                     # doc.Delete returns a collection of all deleted IDs (including cascaded)
                     result = doc.Delete(elem_id)
-                    primary_id = int(elem_id.Value)
+                    primary_id = get_element_id_value(elem_id)
                     deleted_ids.append(primary_id)
 
                     # Track cascaded deletions
                     if result:
                         for del_id in result:
-                            del_id_int = int(del_id.Value)
+                            del_id_int = get_element_id_value(del_id)
                             if del_id_int != primary_id and del_id_int not in cascaded_ids:
                                 cascaded_ids.append(del_id_int)
 
@@ -190,7 +190,7 @@ def register_editing_routes(api):
                         elif param.StorageType == DB.StorageType.Double:
                             old_value = str(round(param.AsDouble(), 6))
                         elif param.StorageType == DB.StorageType.ElementId:
-                            old_value = str(int(param.AsElementId().Value))
+                            old_value = str(get_element_id_value(param.AsElementId()))
                     except Exception:
                         old_value = ""
 
@@ -277,7 +277,7 @@ def register_editing_routes(api):
                     continue
 
                 elem_info = {
-                    "id": int(elem_id.Value),
+                    "id": get_element_id_value(elem_id),
                     "category": elem.Category.Name if elem.Category else "Unknown",
                     "type": get_element_name(elem),
                 }
