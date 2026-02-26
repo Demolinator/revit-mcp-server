@@ -22,6 +22,21 @@ The MCP server runs on your machine and communicates with Revit through pyRevit'
 | **uv** | Python package manager ([install](https://docs.astral.sh/uv/getting-started/installation/)) |
 | **A project open in Revit** | Tools require an active document |
 
+## Install pyRevit (if not already installed)
+
+pyRevit is a free add-in that lets scripts run inside Revit. This MCP server needs it to communicate with Revit.
+
+1. Go to https://github.com/pyrevitlabs/pyRevit/releases
+2. Download the latest **.exe installer** (e.g. `pyRevit_CLI_x.x.x.x_admin_signed.exe`)
+3. Run the installer — accept all defaults, click **Next** through each screen
+4. Open (or restart) Revit — you should see a **pyRevit** tab in the ribbon at the top
+5. In the pyRevit tab, click **Settings** (gear icon)
+6. In the Settings window, go to the **Routes** section on the left
+7. Check the box to **Enable Routes Server**
+8. Click **Save Settings** and let pyRevit reload
+
+To verify: open a browser and go to `http://localhost:48884/` — you should see a response (not a "connection refused" error).
+
 ## Quick Start
 
 ### Step 1: Clone and install
