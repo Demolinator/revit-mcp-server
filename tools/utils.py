@@ -1,107 +1,77 @@
 # -*- coding: utf-8 -*-
-"""Utility functions for MCP tools"""
+"""Shared helpers for tool modules.
+
+Tool modules import ``Context`` and ``format_response`` from here so they all
+share one way of turning route results into text for the model.
+"""
+
+import json
+
+from mcp.server.fastmcp import Context  # re-exported for tool modules
+
+__all__ = ["Context", "format_response"]
+
+# Keys that describe the envelope rather than the payload.
+_ENVELOPE_KEYS = ("status", "health", "success")
+_FAILURE_STATUSES = ("error", "failed", "failure", "exception")
+
+
+def _to_text(value):
+    """Render a payload value readably: JSON for containers, str otherwise."""
+    if isinstance(value, (dict, list, tuple)):
+        return json.dumps(value, indent=2, ensure_ascii=False, default=str)
+    return str(value)
+
+
+def _is_failure(payload):
+    status = str(payload.get("status", "")).lower()
+    return bool(payload.get("error")) or status in _FAILURE_STATUSES
+
+
+def _describe_failure(payload):
+    lines = ["Error: {}".format(payload.get("error") or "Revit reported a failure")]
+    if payload.get("details"):
+        lines.append("Details: {}".format(_to_text(payload["details"])))
+    extra = {k: v for k, v in payload.items()
+             if k not in ("error", "details", "traceback") + _ENVELOPE_KEYS}
+    if extra:
+        lines.append("Context: {}".format(_to_text(extra)))
+    if payload.get("traceback"):
+        lines.append("Traceback:\n{}".format(payload["traceback"]))
+    return "\n".join(lines)
+
+
+def _describe_status(payload):
+    lines = ["Revit MCP status: {} ({})".format(payload.get("status"), payload.get("health", "unknown"))]
+    for key in sorted(k for k in payload if k not in ("status", "health")):
+        lines.append("  {}: {}".format(key, payload[key]))
+    return "\n".join(lines)
 
 
 def format_response(response):
-    """Helper function to format API responses consistently for MCP tools.
+    """Turn a route result into text for the model.
 
-    Args:
-        response: The response from a revit_get or revit_post call, can be dict or string
-
-    Returns:
-        str: Formatted string response suitable for MCP tool return values
+    * strings (transport errors from the client) pass through unchanged
+    * failures (an ``error`` key or a failure ``status``) become an ``Error:`` block
+    * code-execution results return their captured ``output``
+    * health checks (``status == "active"``) get a short status summary
+    * anything else returns its ``message`` followed by the remaining data as JSON,
+      so IDs and values created by a tool are never dropped
     """
-    if isinstance(response, dict):
-        # Check for different success patterns
-        status = response.get("status", "").lower()
-        health = response.get("health", "").lower()
-
-        # Routes signal failure with an "error" key or an explicit failure status.
-        # Any other dict (including data-bearing responses that omit "status",
-        # e.g. get_revit_model_info) is a success — otherwise good data is
-        # mislabeled as an error.
-        has_error = (bool(response.get("error")) or
-                     status in ("error", "failed", "failure", "exception"))
-        is_success = not has_error
-
-        if is_success:
-            # For successful responses, return the most relevant data
-            if "output" in response:  # Code execution responses
-                return response["output"]
-            elif "message" in response:
-                return response["message"]
-            elif "result" in response:
-                return str(response["result"])
-            elif "data" in response:
-                return str(response["data"])
-            elif status == "active":  # Status check responses
-                # Format status response nicely
-                status_parts = ["=== REVIT STATUS ==="]
-                status_parts.append("Status: {}".format(response.get("status", "Unknown")))
-                status_parts.append("Health: {}".format(response.get("health", "Unknown")))
-                
-                if "api_name" in response:
-                    status_parts.append("API: {}".format(response["api_name"]))
-                if "document_title" in response:
-                    status_parts.append("Document: {}".format(response["document_title"]))
-                if "revit_available" in response:
-                    status_parts.append("Revit Available: {}".format(response["revit_available"]))
-                
-                # Add any other fields that might be present
-                known_fields = {"status", "health", "api_name", "document_title", "revit_available"}
-                other_fields = set(response.keys()) - known_fields
-                if other_fields:
-                    status_parts.append("")
-                    for field in sorted(other_fields):
-                        status_parts.append("{}: {}".format(field.replace("_", " ").title(), response[field]))
-                
-                return "\n".join(status_parts)
-            else:
-                # Structured success payload without a standard wrapper key
-                # (e.g. model info, level lists). Surface the data instead of
-                # hiding it behind a generic message.
-                data_fields = dict((k, v) for k, v in response.items()
-                                   if k not in ("status", "health", "success"))
-                if data_fields:
-                    parts = []
-                    for key in sorted(data_fields):
-                        parts.append("{}: {}".format(key.replace("_", " ").title(),
-                                                      data_fields[key]))
-                    return "\n".join(parts)
-                return "Operation completed successfully"
-        else:
-            # Error case - provide verbose debugging information
-            error_msg = response.get("error", "Unknown error occurred")
-            traceback_info = response.get("traceback", "")
-            details = response.get("details", "")
-            status = response.get("status", "unknown")
-            
-            # Build comprehensive error message
-            error_parts = ["=== ERROR DETAILS ==="]
-            error_parts.append("Status: {}".format(status))
-            error_parts.append("Error: {}".format(error_msg))
-            
-            if details:
-                error_parts.append("Details: {}".format(details))
-            
-            if traceback_info:  # Code execution error with traceback
-                error_parts.append("\n=== TRACEBACK ===")
-                error_parts.append(traceback_info)
-            
-            # Add any additional fields that might be helpful for debugging
-            debug_fields = ["code_attempted", "endpoint", "request_data", "response_code"]
-            for field in debug_fields:
-                if field in response:
-                    error_parts.append("{}: {}".format(field.replace("_", " ").title(), response[field]))
-            
-            # Include full response for debugging if it has unexpected fields
-            response_keys = set(response.keys()) - {"error", "traceback", "details", "status", "code_attempted", "endpoint", "request_data", "response_code"}
-            if response_keys:
-                error_parts.append("\n=== ADDITIONAL RESPONSE DATA ===")
-                for key in sorted(response_keys):
-                    error_parts.append("{}: {}".format(key, response[key]))
-            
-            return "\n".join(error_parts)
-    else:
-        # If response is already a string (error case from _revit_call)
+    if not isinstance(response, dict):
         return str(response)
+    if _is_failure(response):
+        return _describe_failure(response)
+    if "output" in response:
+        return str(response["output"])
+    if str(response.get("status", "")).lower() == "active":
+        return _describe_status(response)
+
+    message = response.get("message")
+    data = {k: v for k, v in response.items() if k not in _ENVELOPE_KEYS + ("message",)}
+    if not data:
+        return message or "Done."
+    if not message and list(data) in (["result"], ["data"]):
+        return _to_text(next(iter(data.values())))  # generic wrapper key adds nothing
+    body = _to_text(data)
+    return "{}\n{}".format(message, body) if message else body

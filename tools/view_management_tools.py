@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """View management tools — create views and set active view"""
 
-from mcp.server.fastmcp import Context
-from .utils import format_response
+from .utils import Context, format_response
 
 
 def register_view_management_tools(mcp, revit_get, revit_post, revit_image=None):

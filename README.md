@@ -39,7 +39,7 @@ To verify: open a browser and go to `http://localhost:48884/` — you should see
 
 ## Quick Start
 
-### Step 1: Clone and install
+### 1. Get the code
 
 ```bash
 git clone https://github.com/Demolinator/revit-mcp-server.git
@@ -47,102 +47,74 @@ cd revit-mcp-server
 uv sync
 ```
 
-### Step 2: Install the pyRevit extension
+### 2. Load the extension into pyRevit
 
-The `revit_mcp/` folder and `startup.py` need to run inside Revit via pyRevit.
+`startup.py` and `revit_mcp/` run **inside Revit**, so pyRevit has to load this folder as an extension.
 
-**Option A — Install from pyRevit (recommended):**
+> Don't install "MCP Server for Revit Python" from the pyRevit Extensions manager. That entry installs the original upstream project, which lacks most of the 48 routes this server calls.
 
-1. In Revit, go to pyRevit tab > Extensions
-2. Find "MCP Server for Revit Python" > Install
-3. Wait for pyRevit to reload
+1. Pick a folder for your pyRevit extensions, e.g. `C:\pyRevitExtensions`.
+2. Link this repo into it under a name ending in `.extension` (a junction keeps it updated whenever you `git pull`):
+   ```powershell
+   New-Item -ItemType Junction -Path C:\pyRevitExtensions\revit-mcp.extension -Target C:\path\to\revit-mcp-server
+   ```
+   (Copying the folder there with that name works too; you'll just need to copy it again after updates.)
+3. In Revit: **pyRevit tab → Settings → Custom Extension Directories** → add `C:\pyRevitExtensions`.
+4. In the same Settings window, under **Routes**, turn on **Routes Server** (port `48884`).
+5. **Save Settings and Reload.**
 
-**Option B — Manual install:**
+### 3. Check Revit is answering
 
-1. Copy the entire repo folder to `%APPDATA%\pyRevit\Extensions\`
-2. Rename the folder to `mcp-server-for-revit-python.extension`
-3. In Revit, go to pyRevit tab > Settings > Custom Extensions
-4. Add the path to the `.extension` folder
-5. Reload pyRevit (or restart Revit)
+With a project open, browse to <http://localhost:48884/revit_mcp/status/>. A working setup answers with `"status": "active"` and your project's title. A 404 means the extension isn't loaded; "can't reach this page" means Routes is off or Revit is closed.
 
-### Step 3: Activate pyRevit Routes
+### 4. Connect your AI client
 
-1. In Revit, go to pyRevit tab > Settings
-2. Navigate to Routes > activate **Routes Server**
-3. pyRevit will start listening on `http://localhost:48884/`
-
-### Step 4: Verify connection
-
-Open a browser and go to:
-
-```
-http://localhost:48884/revit_mcp/status/
-```
-
-You should see:
-
-```json
-{
-  "status": "active",
-  "health": "healthy",
-  "revit_available": true,
-  "document_title": "your_project_name",
-  "api_name": "revit_mcp"
-}
-```
-
-### Step 5: Start the MCP server
-
-```bash
-uv run main.py
-```
-
-That's it. Your AI client can now connect.
-
-## Connecting Your AI Client
-
-### Claude Desktop / Claude Code
-
-Add to your MCP config:
+Most desktop clients start the server themselves over stdio. Add this to the client's MCP configuration (for Claude Desktop: `claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
     "revit": {
       "command": "uv",
-      "args": ["run", "main.py"],
-      "cwd": "/path/to/revit-mcp-server"
+      "args": ["run", "--directory", "C:\path\to\revit-mcp-server", "main.py"]
     }
   }
 }
 ```
 
-### Cursor / Windsurf / Other MCP Clients
+For Claude Code: `claude mcp add revit -- uv run --directory C:\path\to\revit-mcp-server main.py`
 
-Use HTTP transport:
-
-```bash
-uv run main.py --streamable-http
-```
-
-Then configure your client to connect to `http://localhost:8000/mcp`.
-
-### Transport Modes
-
-| Flag | Transport | Endpoints | Use Case |
-|------|-----------|-----------|----------|
-| *(none)* | stdio | stdin/stdout | Claude Desktop / Claude Code |
-| `--sse` | SSE | `/sse`, `/messages/` | Legacy clients |
-| `--streamable-http` | HTTP | `/mcp` | HTTP-based clients |
-| `--combined` | Both | All above | Maximum compatibility |
-
-### Testing with MCP Inspector
+Clients that connect over HTTP instead (some Cursor/Windsurf setups, remote clients) need the server started separately:
 
 ```bash
-mcp dev main.py
+uv run main.py --http        # then point the client at http://127.0.0.1:8000/mcp
 ```
 
-Then open `http://127.0.0.1:6274` in your browser.
+| Start with | Protocol | Served at |
+|---|---|---|
+| `uv run main.py` | stdio (default) | the client's stdin/stdout |
+| `--http` (alias `--streamable-http`) | Streamable HTTP | `/mcp` |
+| `--sse` | Server-Sent Events (older clients) | `/sse` and `/messages/` |
+| `--combined` | Streamable HTTP + SSE together | all of the above |
+
+### Configuration
+
+Set these environment variables (or the `env` block of your MCP client config) to change the defaults:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `REVIT_HOST` | `localhost` | Machine running Revit + pyRevit Routes |
+| `REVIT_PORT` | `48884` | pyRevit Routes port |
+| `MCP_HOST` | `127.0.0.1` | Bind address for `--http` / `--sse` / `--combined` |
+| `MCP_PORT` | `8000` | Port for `--http` / `--sse` / `--combined` |
+
+Keep `MCP_HOST` on `127.0.0.1` unless you understand the risks in [SECURITY.md](SECURITY.md).
+
+### Try tools without an AI client
+
+```bash
+uv run mcp dev main.py       # opens the MCP Inspector at http://127.0.0.1:6274
+```
 
 ## Supported Tools (48)
 
@@ -183,7 +155,7 @@ Then open `http://127.0.0.1:6274` in your browser.
 | `list_category_parameters` | List parameters for a category |
 | `get_element_properties` | Get all parameters and properties of an element |
 
-### Modify (8)
+### Modify (9)
 
 | Tool | Description |
 |------|-------------|
@@ -207,7 +179,7 @@ Then open `http://127.0.0.1:6274` in your browser.
 | `check_clashes` | Detect hard clashes (interferences) between disciplines, e.g. structure vs MEP |
 | `analyze_model_statistics` | Element counts and model stats |
 
-### Document (3)
+### Document (2)
 
 | Tool | Description |
 |------|-------------|

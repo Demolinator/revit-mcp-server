@@ -31,4 +31,4 @@ MCP client used:
 - [ ] ElementIds use `make_element_id()` / `get_element_id_value()`
 - [ ] New routes are registered in `startup.py`, new tools in `tools/__init__.py`
 - [ ] README tool tables/counts (and `LLM.txt`, if relevant) are updated
-- [ ] `uv run python -c "import main"` succeeds
+- [ ] `uv run pytest` passes (tool contract regenerated if tools changed on purpose)

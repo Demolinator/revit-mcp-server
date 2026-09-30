@@ -248,8 +248,7 @@ def register_wall_stats_routes(api):
 # -*- coding: utf-8 -*-
 """Wall statistics tools"""
 
-from mcp.server.fastmcp import Context
-from .utils import format_response
+from .utils import Context, format_response
 
 
 def register_wall_stats_tools(mcp, revit_get, revit_post, revit_image=None):
@@ -279,7 +278,14 @@ def register_wall_stats_tools(mcp, revit_get, revit_post, revit_image=None):
 
 ### 4. Register the tool — `tools/__init__.py`
 
-Add both the import and the `register_*` call, following the existing pattern.
+Append one row to the `_MODULES` table:
+
+```python
+    ("wall_stats_tools", "register_wall_stats_tools", _ALL),
+```
+
+Then regenerate the tool contract (see [Testing](#testing)) so the new tool is
+recorded.
 
 ### 5. Update the docs
 
@@ -357,20 +363,38 @@ retry.
 
 ## Testing
 
-The current tests in `tests/` are **integration checks that need a running
-Revit** with the extension loaded and a project open. They are plain scripts
-(not pytest tests):
+### Offline tests (no Revit needed)
 
 ```bash
-uv run python tests/test_model_info_format.py   # needs Revit + open project
-uv run python tests/test_init_latency.py        # stdio cold-start time
+uv run pytest
 ```
 
-An offline test suite (mocked pyRevit / HTTP) and CI are tracked as open
-issues, and contributions there are very welcome.
+`tests/test_offline.py` covers the CPython half: response formatting, the
+HTTP client's error handling (Revit unreachable, missing route, timeout),
+transport flags, and the **tool contract**. The contract is every tool's name
+and input schema, pinned in `tests/tool_contract.json`, so an accidental
+rename or argument change fails the build.
 
-**Before opening a PR that touches `revit_mcp/`**, please manually verify in
-Revit:
+When you add or change a tool **on purpose**, regenerate the contract and
+mention it in your PR:
+
+```bash
+uv run python -c "import asyncio, json, main; json.dump({t.name: t.inputSchema for t in asyncio.run(main.mcp.list_tools())}, open('tests/tool_contract.json', 'w'), indent=1, sort_keys=True)"
+```
+
+### Live checks (need Revit)
+
+`tests/live/` holds scripts that talk to a running Revit with the extension
+loaded and a project open. pytest does not collect them; run them directly:
+
+```bash
+uv run python tests/live/check_model_info_format.py
+uv run python tests/live/check_init_latency.py     # stdio cold-start time
+```
+
+### Manual verification in Revit
+
+**Before opening a PR that touches `revit_mcp/`**, please verify in Revit:
 
 1. pyRevit reloads without errors, and `/revit_mcp/status/` returns `active`.
 2. Your tool works via MCP Inspector or an AI client, **including one
@@ -378,8 +402,8 @@ Revit:
 3. No modal dialogs appeared, and Revit's **Undo** list shows a sensible entry.
 4. Record the **Revit + pyRevit versions** you tested in the PR.
 
-Changes that only touch `tools/`, `main.py`, or docs just need
-`uv run python -c "import main"` to succeed.
+Changes that only touch `tools/`, `main.py`, or docs just need `uv run pytest`
+to pass.
 
 ---
 

@@ -1,55 +1,44 @@
 # -*- coding: utf-8 -*-
-"""Tool registration system for Revit MCP Server"""
+"""MCP tool modules.
+
+Each module in this package defines ``register_<name>_tools(mcp, ...)`` and
+pairs with a route module in ``revit_mcp/``. To add a module, create it and
+append one row to ``_MODULES``.
+"""
+
+from importlib import import_module
+
+# (module, registration function, HTTP helpers it takes after `mcp`)
+_ALL = ("get", "post", "image")
+_MODULES = (
+    ("status_tools", "register_status_tools", ("get",)),
+    ("view_tools", "register_view_tools", _ALL),
+    ("family_tools", "register_family_tools", ("get", "post")),
+    ("model_tools", "register_model_tools", ("get",)),
+    ("colors_tools", "register_colors_tools", ("get", "post")),
+    ("code_execution_tools", "register_code_execution_tools", _ALL),
+    ("building_tools", "register_building_tools", _ALL),
+    ("editing_tools", "register_editing_tools", _ALL),
+    ("structure_tools", "register_structure_tools", _ALL),
+    ("annotation_tools", "register_annotation_tools", _ALL),
+    ("analysis_tools", "register_analysis_tools", _ALL),
+    ("documentation_tools", "register_documentation_tools", _ALL),
+    ("room_tools", "register_room_tools", _ALL),
+    ("view_management_tools", "register_view_management_tools", _ALL),
+    ("tag_tools", "register_tag_tools", _ALL),
+    ("transform_tools", "register_transform_tools", _ALL),
+    ("mep_tools", "register_mep_tools", _ALL),
+    ("parameter_tools", "register_parameter_tools", _ALL),
+    ("interop_tools", "register_interop_tools", _ALL),
+    ("detail_tools", "register_detail_tools", _ALL),
+    ("clash_tools", "register_clash_tools", _ALL),
+    ("document_tools", "register_document_tools", _ALL),
+)
 
 
-def register_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func):
-    """Register all tools with the MCP server"""
-    # Import all tool modules
-    from .status_tools import register_status_tools
-    from .view_tools import register_view_tools
-    from .family_tools import register_family_tools
-    from .model_tools import register_model_tools
-    from .colors_tools import register_colors_tools
-    from .code_execution_tools import register_code_execution_tools
-    from .building_tools import register_building_tools
-    from .editing_tools import register_editing_tools
-    from .structure_tools import register_structure_tools
-    from .annotation_tools import register_annotation_tools
-    from .analysis_tools import register_analysis_tools
-    from .documentation_tools import register_documentation_tools
-    from .room_tools import register_room_tools
-    from .view_management_tools import register_view_management_tools
-    from .tag_tools import register_tag_tools
-    from .transform_tools import register_transform_tools
-    from .mep_tools import register_mep_tools
-    from .parameter_tools import register_parameter_tools
-    from .interop_tools import register_interop_tools
-    from .detail_tools import register_detail_tools
-    from .clash_tools import register_clash_tools
-    from .document_tools import register_document_tools
-
-    # Register tools from each module
-    register_status_tools(mcp_server, revit_get_func)
-    register_view_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_family_tools(mcp_server, revit_get_func, revit_post_func)
-    register_model_tools(mcp_server, revit_get_func)
-    register_colors_tools(mcp_server, revit_get_func, revit_post_func)
-    register_code_execution_tools(
-        mcp_server, revit_get_func, revit_post_func, revit_image_func
-    )
-    register_building_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_editing_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_structure_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_annotation_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_analysis_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_documentation_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_room_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_view_management_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_tag_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_transform_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_mep_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_parameter_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_interop_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_detail_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_clash_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
-    register_document_tools(mcp_server, revit_get_func, revit_post_func, revit_image_func)
+def register_tools(mcp_server, revit_get, revit_post, revit_image):
+    """Register every tool module with ``mcp_server``."""
+    helpers = {"get": revit_get, "post": revit_post, "image": revit_image}
+    for module_name, func_name, needs in _MODULES:
+        register = getattr(import_module("." + module_name, __name__), func_name)
+        register(mcp_server, *(helpers[n] for n in needs))
