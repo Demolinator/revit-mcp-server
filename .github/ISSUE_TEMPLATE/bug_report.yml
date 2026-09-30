@@ -1,0 +1,75 @@
+name: Bug report
+description: A tool fails, returns wrong results, or Revit misbehaves
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! The details below let us reproduce the problem, since behavior often differs between Revit versions.
+  - type: input
+    id: tool
+    attributes:
+      label: Tool name
+      description: Which MCP tool was called? (e.g. `place_family`, `create_line_based_element`). Leave blank if it's a setup/connection issue.
+      placeholder: place_family
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The prompt you gave the AI and/or the exact tool arguments. A repro in a new project from the default template is ideal.
+      placeholder: |
+        1. New project from default architectural template
+        2. Call create_line_based_element with {...}
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Error output
+      description: Full error text, including any `=== ERROR DETAILS ===` block and traceback.
+      render: text
+  - type: dropdown
+    id: revit
+    attributes:
+      label: Revit version
+      multiple: true
+      options: ["2024", "2025", "2026", "2027", "Other"]
+    validations:
+      required: true
+  - type: input
+    id: pyrevit
+    attributes:
+      label: pyRevit version
+      placeholder: "e.g. 5.1.0"
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options: ["Claude Desktop", "Claude Code", "Cursor", "Windsurf", "VS Code / Copilot", "Cline", "MCP Inspector", "Other"]
+  - type: dropdown
+    id: transport
+    attributes:
+      label: Transport
+      options: ["stdio (default)", "--streamable-http", "--sse", "--combined"]
+  - type: textarea
+    id: status
+    attributes:
+      label: Output of http://localhost:48884/revit_mcp/status/
+      render: json
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this isn't a duplicate
+          required: true
+        - label: I removed any confidential project information from this report
+          required: true
