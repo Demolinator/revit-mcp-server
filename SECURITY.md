@@ -19,7 +19,7 @@ Security fixes are made on the latest `master` only.
 
 **Please do not open a public issue for security problems.**
 
-Email **talal@demolinator.com** with:
+Email **talal.ahmed.work@proton.me** with:
 
 - a description of the issue and its impact
 - steps to reproduce (Revit / pyRevit / client versions)

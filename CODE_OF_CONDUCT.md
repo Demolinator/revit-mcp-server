@@ -12,7 +12,7 @@ This project adopts the [Contributor Covenant, version 2.1](https://www.contribu
 ## Reporting
 
 If you experience or witness unacceptable behavior, contact the maintainer at
-**talal@demolinator.com**. Reports will be handled confidentially.
+**talal.ahmed.work@proton.me**. Reports will be handled confidentially.
 
 Maintainers may remove, edit, or reject comments, commits, code, issues, and
 other contributions that do not align with this Code of Conduct, and may
