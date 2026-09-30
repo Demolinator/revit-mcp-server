@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Demolinator/revit-mcp-server/blob/master/SECURITY.md
+    about: Please report security issues privately, not as a public issue.
+  - name: Claude plugin / one-click setup (revit-mcp-plugin)
+    url: https://github.com/Demolinator/revit-mcp-plugin/issues
+    about: Issues with the Claude plugin, skills, slash commands, or setup scripts belong there.
+  - name: pyRevit itself
+    url: https://github.com/pyrevitlabs/pyRevit/issues
+    about: Problems installing pyRevit or with the Routes server itself.

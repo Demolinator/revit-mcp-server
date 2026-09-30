@@ -1,0 +1,46 @@
+name: New tool proposal
+description: Propose a new MCP tool (a new Revit capability for the AI)
+labels: ["enhancement", "new tool"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New tools need a route in `revit_mcp/` (IronPython 2.7) and a tool in `tools/` (Python 3.11+). See the "Adding a new tool" section of [CONTRIBUTING.md](https://github.com/Demolinator/revit-mcp-server/blob/master/CONTRIBUTING.md#adding-a-new-tool).
+  - type: input
+    id: name
+    attributes:
+      label: Proposed tool name
+      description: snake_case verb, e.g. `create_ceiling`, `list_worksets`
+    validations:
+      required: true
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Use case
+      description: What would a user ask the AI to do that this tool enables?
+      placeholder: Add a 2700 mm ceiling to every room on Level 1
+    validations:
+      required: true
+  - type: textarea
+    id: args
+    attributes:
+      label: Arguments and return value
+      description: Inputs (with units, always mm for lengths) and what the tool should return.
+  - type: textarea
+    id: api
+    attributes:
+      label: Revit API notes
+      description: Relevant Revit API classes/methods, and any known differences between 2024–2027.
+  - type: textarea
+    id: overlap
+    attributes:
+      label: Overlap with existing tools
+      description: Could an existing tool be extended instead? (See the tool tables in README.md.)
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to implement this?
+      options:
+        - "Yes, I'd like to open a PR"
+        - "Maybe, with some guidance"
+        - "No, just suggesting"

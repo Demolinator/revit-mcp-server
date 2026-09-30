@@ -268,11 +268,15 @@ Adding a new tool requires 2 files + 2 registration lines:
 3. **Register routes** in `startup.py`
 4. **Register tools** in `tools/__init__.py`
 
-See `LLM.txt` for full context that helps AI assistants understand the codebase.
+See [CONTRIBUTING.md](CONTRIBUTING.md#adding-a-new-tool) for a complete worked example, and `LLM.txt` for context that helps AI assistants understand the codebase.
 
 ## Contributing
 
-Contributions are welcome! Feel free to submit pull requests or open issues.
+Contributions are welcome — from typo fixes to new tools! Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for the dev setup, the edit–reload loop, a step-by-step "add a tool" walkthrough, and coding conventions.
+
+- Looking for a place to start? See issues labeled [`good first issue`](https://github.com/Demolinator/revit-mcp-server/labels/good%20first%20issue).
+- Found a bug or have an idea? [Open an issue](https://github.com/Demolinator/revit-mcp-server/issues/new/choose).
+- Please follow our [Code of Conduct](CODE_OF_CONDUCT.md), and report security issues privately per [SECURITY.md](SECURITY.md).
 
 ## Author
 

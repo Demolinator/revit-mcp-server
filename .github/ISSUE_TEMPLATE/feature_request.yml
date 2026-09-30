@@ -1,0 +1,29 @@
+name: Feature request / improvement
+description: Suggest an improvement to an existing tool, the server, or the docs
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the workflow. e.g. "As an MEP engineer I want to..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should it work? Which tools or files would change?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Workarounds or alternatives
+      description: Can this be done today with `execute_revit_code` or other tools?
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to implement this?
+      options:
+        - "Yes, I'd like to open a PR"
+        - "Maybe, with some guidance"
+        - "No, just suggesting"
