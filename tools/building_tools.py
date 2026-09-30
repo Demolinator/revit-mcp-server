@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Building creation tools — walls, floors, roofs, ceilings, and levels"""
 
-from mcp.server.fastmcp import Context
-from .utils import format_response
+from .utils import Context, format_response
 
 
 def register_building_tools(mcp, revit_get, revit_post, revit_image=None):

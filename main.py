@@ -1,138 +1,175 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-import httpx
-import anyio
-from mcp.server.fastmcp import FastMCP, Image, Context
-import base64
-from typing import Optional, Dict, Any, Union
+"""Revit MCP Server - entry point.
 
-# Create a generic MCP server for interacting with Revit
-# Use stateless_http=True and json_response=True for better compatibility
-mcp = FastMCP(
-    "Revit MCP Server", 
-    host="127.0.0.1", 
-    port=8000,
-    stateless_http=True,
-    json_response=True
+Exposes Revit to MCP clients. Every tool forwards to an HTTP endpoint served by
+the revit-mcp pyRevit extension (``startup.py`` + ``revit_mcp/``) running
+inside Revit.
+
+Usage:
+    uv run main.py                     # stdio (Claude Desktop / Claude Code)
+    uv run main.py --http              # streamable HTTP on /mcp
+    uv run main.py --sse               # legacy SSE on /sse + /messages/
+    uv run main.py --combined          # streamable HTTP and SSE together
+
+Environment:
+    REVIT_HOST  host running Revit + pyRevit Routes   (default: localhost)
+    REVIT_PORT  pyRevit Routes port                   (default: 48884)
+    MCP_HOST    bind address for --http/--sse modes   (default: 127.0.0.1)
+    MCP_PORT    port for --http/--sse modes           (default: 8000)
+"""
+
+import argparse
+import base64
+import os
+from typing import Any, Dict, Optional, Union
+
+import httpx
+from mcp.server.fastmcp import FastMCP, Image
+
+REVIT_HOST = os.environ.get("REVIT_HOST", "localhost")
+REVIT_PORT = int(os.environ.get("REVIT_PORT", "48884"))
+MCP_HOST = os.environ.get("MCP_HOST", "127.0.0.1")
+MCP_PORT = int(os.environ.get("MCP_PORT", "8000"))
+
+API_ROOT = "http://{}:{}/revit_mcp".format(REVIT_HOST, REVIT_PORT)
+DEFAULT_TIMEOUT = 30.0
+IMAGE_TIMEOUT = 60.0
+
+UNREACHABLE_HINT = (
+    "Error: cannot reach Revit at {root}.\n"
+    "Check that:\n"
+    "  1. Revit is open with a project (not just the start screen)\n"
+    "  2. pyRevit Routes Server is enabled (pyRevit tab > Settings > Routes)\n"
+    "  3. the revit-mcp pyRevit extension is installed and loaded\n"
+    "Test in a browser: {root}/status/"
+)
+NOT_FOUND_HINT = (
+    "Error: Revit does not provide the route '{path}' (HTTP 404).\n"
+    "The pyRevit extension loaded in Revit is probably missing or a different "
+    "version from this server. Reinstall the extension from this repository "
+    "and reload pyRevit."
+)
+TIMEOUT_HINT = (
+    "Error: Revit did not answer '{path}' within {secs:.0f}s.\n"
+    "Revit may be busy or blocked by an open dialog; check the Revit window."
 )
 
-# Configuration
-REVIT_HOST = os.environ.get("REVIT_HOST", "localhost")
-REVIT_PORT = 48884  # Default pyRevit Routes port
-BASE_URL = f"http://{REVIT_HOST}:{REVIT_PORT}/revit_mcp"
-
-# Shared HTTP client with keep-alive connection pooling. Reusing a single
-# AsyncClient across all tool calls avoids the per-request TCP/handshake cost
-# of creating a new client each time — meaningful when a session fires dozens
-# of calls at the local Routes server.
-_http_client: Optional[httpx.AsyncClient] = None
+Payload = Dict[str, Any]
+Result = Union[Payload, str]
 
 
-def _get_client() -> httpx.AsyncClient:
-    global _http_client
-    if _http_client is None or _http_client.is_closed:
-        _http_client = httpx.AsyncClient(
-            base_url=BASE_URL,
-            limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
-        )
-    return _http_client
+class RevitClient(object):
+    """Async HTTP client for the revit-mcp routes.
 
+    One pooled connection is shared by all tool calls. Methods never raise:
+    failures come back as an ``"Error: ..."`` string the model can read.
+    """
 
-async def revit_get(endpoint: str, ctx: Context = None, **kwargs) -> Union[Dict, str]:
-    """Simple GET request to Revit API"""
-    return await _revit_call("GET", endpoint, ctx=ctx, **kwargs)
+    def __init__(self, root: str = API_ROOT):
+        self.root = root
+        self._http: Optional[httpx.AsyncClient] = None
 
-
-async def revit_post(endpoint: str, data: Dict[str, Any], ctx: Context = None, **kwargs) -> Union[Dict, str]:
-    """Simple POST request to Revit API"""
-    return await _revit_call("POST", endpoint, data=data, ctx=ctx, **kwargs)
-
-
-async def revit_image(endpoint: str, ctx: Context = None) -> Union[Image, str]:
-    """GET request that returns an Image object"""
-    try:
-        client = _get_client()
-        response = await client.get(endpoint, timeout=60.0)
-
-        if response.status_code == 200:
-            data = response.json()
-            image_bytes = base64.b64decode(data["image_data"])
-            return Image(data=image_bytes, format="png")
-        else:
-            return f"Error: {response.status_code} - {response.text}"
-    except Exception as e:
-        return f"Error: {e}"
-
-
-async def _revit_call(method: str, endpoint: str, data: Dict = None, ctx: Context = None, 
-                     timeout: float = 30.0, params: Dict = None) -> Union[Dict, str]:
-    """Internal function handling all HTTP calls"""
-    try:
-        client = _get_client()
-
-        if method == "GET":
-            response = await client.get(endpoint, params=params, timeout=timeout)
-        else:  # POST
-            response = await client.post(
-                endpoint,
-                json=data,
-                headers={"Content-Type": "application/json"},
-                timeout=timeout,
+    def _session(self) -> httpx.AsyncClient:
+        if self._http is None or self._http.is_closed:
+            self._http = httpx.AsyncClient(
+                base_url=self.root,
+                limits=httpx.Limits(max_connections=20, max_keepalive_connections=10),
             )
+        return self._http
 
-        return response.json() if response.status_code == 200 else f"Error: {response.status_code} - {response.text}"
-    except Exception as e:
-        return f"Error: {e}"
+    async def _send(self, method: str, path: str, timeout: float, **kwargs) -> Union[httpx.Response, str]:
+        try:
+            return await self._session().request(method, path, timeout=timeout, **kwargs)
+        except (httpx.ConnectError, httpx.ConnectTimeout):
+            return UNREACHABLE_HINT.format(root=self.root)
+        except httpx.TimeoutException:
+            return TIMEOUT_HINT.format(path=path, secs=timeout)
+        except httpx.HTTPError as exc:
+            return "Error: request to {} failed: {}".format(path, exc)
+
+    @staticmethod
+    def _decode(path: str, response: Union[httpx.Response, str]) -> Result:
+        if isinstance(response, str):
+            return response
+        if response.status_code == 404:
+            return NOT_FOUND_HINT.format(path=path)
+        try:
+            body = response.json()
+        except ValueError:
+            return "Error: {} - {}".format(response.status_code, response.text)
+        if response.status_code >= 400 and isinstance(body, dict) and "error" not in body:
+            body = dict(body, error="HTTP {}".format(response.status_code))
+        return body
+
+    async def get(self, path: str, ctx=None, timeout: float = DEFAULT_TIMEOUT,
+                  params: Optional[Payload] = None) -> Result:
+        """GET a route and return its decoded JSON (or an error string)."""
+        return self._decode(path, await self._send("GET", path, timeout, params=params))
+
+    async def post(self, path: str, data: Optional[Payload] = None, ctx=None,
+                   timeout: float = DEFAULT_TIMEOUT) -> Result:
+        """POST a JSON body to a route and return its decoded JSON (or an error string)."""
+        return self._decode(path, await self._send("POST", path, timeout, json=data or {}))
+
+    async def image(self, path: str, ctx=None) -> Union[Image, str]:
+        """GET a route that returns ``{"image_data": <base64 png>}`` as an MCP image."""
+        result = self._decode(path, await self._send("GET", path, IMAGE_TIMEOUT))
+        if isinstance(result, str):
+            return result
+        encoded = result.get("image_data") if isinstance(result, dict) else None
+        if not encoded:
+            return "Error: {}".format(result.get("error") if isinstance(result, dict) else result)
+        return Image(data=base64.b64decode(encoded), format="png")
 
 
-# Register all tools BEFORE the main block
-from tools import register_tools
-register_tools(mcp, revit_get, revit_post, revit_image)
+revit = RevitClient()
+mcp = FastMCP(
+    "Revit MCP Server",
+    host=MCP_HOST,
+    port=MCP_PORT,
+    stateless_http=True,
+    json_response=True,
+)
+
+from tools import register_tools  # noqa: E402  (needs `mcp` defined first)
+
+register_tools(mcp, revit.get, revit.post, revit.image)
 
 
-async def run_combined_async():
-    """Run server with both SSE and streamable-http endpoints.
+async def serve_http_and_sse() -> None:
+    """Serve streamable HTTP (/mcp) and SSE (/sse, /messages/) from one app.
 
-    This allows clients to connect via either:
-    - SSE: GET /sse, POST /messages/
-    - Streamable-HTTP: POST/GET /mcp
+    The streamable-HTTP app owns the lifespan that starts its session manager,
+    so the SSE routes are mounted onto it rather than the other way round.
     """
     import uvicorn
 
-    # Get the streamable-http app first - it has the proper lifespan
-    # that initializes the session manager's task group
-    http_app = mcp.streamable_http_app()
+    app = mcp.streamable_http_app()
+    app.routes.extend(mcp.sse_app().routes)
+    config = uvicorn.Config(app, host=MCP_HOST, port=MCP_PORT,
+                            log_level=mcp.settings.log_level.lower())
+    await uvicorn.Server(config).serve()
 
-    # Get SSE routes (SSE doesn't need special lifespan - it creates
-    # task groups per-request in connect_sse())
-    sse_app = mcp.sse_app()
 
-    # Add SSE routes to the http app (preserving its lifespan)
-    for route in sse_app.routes:
-        http_app.routes.append(route)
-
-    config = uvicorn.Config(
-        http_app,
-        host=mcp.settings.host,
-        port=mcp.settings.port,
-        log_level=mcp.settings.log_level.lower(),
-    )
-    server = uvicorn.Server(config)
-    await server.serve()
+def parse_args(argv=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Revit MCP Server")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--http", "--streamable-http", dest="transport", action="store_const",
+                      const="streamable-http", help="serve streamable HTTP on /mcp")
+    mode.add_argument("--sse", dest="transport", action="store_const", const="sse",
+                      help="serve legacy SSE on /sse and /messages/")
+    mode.add_argument("--combined", dest="transport", action="store_const", const="combined",
+                      help="serve streamable HTTP and SSE together")
+    parser.set_defaults(transport="stdio")
+    return parser.parse_args(argv)
 
 
 if __name__ == "__main__":
-    transport = "stdio"
+    transport = parse_args().transport
+    if transport == "combined":
+        import anyio
 
-    if "--sse" in sys.argv:
-        transport = "sse"
-    elif "--http" in sys.argv or "--streamable-http" in sys.argv:
-        transport = "streamable-http"
-    elif "--combined" in sys.argv:
-        # Run both SSE and streamable-http transports simultaneously
-        print("Starting combined server with SSE (/sse, /messages/) and streamable-http (/mcp) endpoints...")
-        anyio.run(run_combined_async)
-        sys.exit(0)
-
-    mcp.run(transport=transport)
+        print("Serving streamable HTTP (/mcp) and SSE (/sse, /messages/) on http://{}:{}".format(MCP_HOST, MCP_PORT))
+        anyio.run(serve_http_and_sse)
+    else:
+        mcp.run(transport=transport)

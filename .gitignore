@@ -1,12 +1,15 @@
-# Python-generated files
+# Python bytecode and build output
 __pycache__/
-*.py[oc]
+*.pyc
+*.pyo
 build/
 dist/
-wheels/
-*.egg-info
+*.egg-info/
 
-# Virtual environments
-.venv
+# Local environments and tool caches
+.venv/
+.pytest_cache/
+.ruff_cache/
 
+# Personal notes
 *TODO.md

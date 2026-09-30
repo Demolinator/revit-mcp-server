@@ -1,0 +1,968 @@
+{
+ "ai_element_filter": {
+  "properties": {
+   "bounding_box_max": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Bounding Box Max",
+    "type": "object"
+   },
+   "bounding_box_min": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Bounding Box Min",
+    "type": "object"
+   },
+   "category": {
+    "default": null,
+    "title": "Category",
+    "type": "string"
+   },
+   "max_elements": {
+    "default": 50,
+    "title": "Max Elements",
+    "type": "integer"
+   },
+   "type_name": {
+    "default": null,
+    "title": "Type Name",
+    "type": "string"
+   },
+   "visible_in_view": {
+    "default": false,
+    "title": "Visible In View",
+    "type": "boolean"
+   }
+  },
+  "title": "ai_element_filterArguments",
+  "type": "object"
+ },
+ "analyze_model_statistics": {
+  "properties": {},
+  "title": "analyze_model_statisticsArguments",
+  "type": "object"
+ },
+ "check_clashes": {
+  "properties": {
+   "max_clashes": {
+    "default": 200,
+    "title": "Max Clashes",
+    "type": "integer"
+   },
+   "set_a_categories": {
+    "default": null,
+    "items": {
+     "type": "string"
+    },
+    "title": "Set A Categories",
+    "type": "array"
+   },
+   "set_b_categories": {
+    "default": null,
+    "items": {
+     "type": "string"
+    },
+    "title": "Set B Categories",
+    "type": "array"
+   }
+  },
+  "title": "check_clashesArguments",
+  "type": "object"
+ },
+ "clear_colors": {
+  "properties": {
+   "category_name": {
+    "title": "Category Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "category_name"
+  ],
+  "title": "clear_colorsArguments",
+  "type": "object"
+ },
+ "color_splash": {
+  "properties": {
+   "category_name": {
+    "title": "Category Name",
+    "type": "string"
+   },
+   "custom_colors": {
+    "anyOf": [
+     {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Custom Colors"
+   },
+   "parameter_name": {
+    "title": "Parameter Name",
+    "type": "string"
+   },
+   "use_gradient": {
+    "default": false,
+    "title": "Use Gradient",
+    "type": "boolean"
+   }
+  },
+  "required": [
+   "category_name",
+   "parameter_name"
+  ],
+  "title": "color_splashArguments",
+  "type": "object"
+ },
+ "create_detail_line": {
+  "properties": {
+   "end_point": {
+    "additionalProperties": true,
+    "title": "End Point",
+    "type": "object"
+   },
+   "line_style": {
+    "default": null,
+    "title": "Line Style",
+    "type": "string"
+   },
+   "start_point": {
+    "additionalProperties": true,
+    "title": "Start Point",
+    "type": "object"
+   },
+   "view_name": {
+    "default": null,
+    "title": "View Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "start_point",
+   "end_point"
+  ],
+  "title": "create_detail_lineArguments",
+  "type": "object"
+ },
+ "create_dimensions": {
+  "properties": {
+   "dimension_type": {
+    "default": "linear",
+    "title": "Dimension Type",
+    "type": "string"
+   },
+   "element_ids": {
+    "items": {
+     "type": "integer"
+    },
+    "title": "Element Ids",
+    "type": "array"
+   }
+  },
+  "required": [
+   "element_ids"
+  ],
+  "title": "create_dimensionsArguments",
+  "type": "object"
+ },
+ "create_duct": {
+  "properties": {
+   "diameter": {
+    "default": null,
+    "title": "Diameter",
+    "type": "number"
+   },
+   "duct_type": {
+    "default": null,
+    "title": "Duct Type",
+    "type": "string"
+   },
+   "end_point": {
+    "additionalProperties": true,
+    "title": "End Point",
+    "type": "object"
+   },
+   "height": {
+    "default": null,
+    "title": "Height",
+    "type": "number"
+   },
+   "level_name": {
+    "default": null,
+    "title": "Level Name",
+    "type": "string"
+   },
+   "start_point": {
+    "additionalProperties": true,
+    "title": "Start Point",
+    "type": "object"
+   },
+   "system_type": {
+    "default": null,
+    "title": "System Type",
+    "type": "string"
+   },
+   "width": {
+    "default": null,
+    "title": "Width",
+    "type": "number"
+   }
+  },
+  "required": [
+   "start_point",
+   "end_point"
+  ],
+  "title": "create_ductArguments",
+  "type": "object"
+ },
+ "create_grid": {
+  "properties": {
+   "grids": {
+    "items": {
+     "additionalProperties": true,
+     "type": "object"
+    },
+    "title": "Grids",
+    "type": "array"
+   }
+  },
+  "required": [
+   "grids"
+  ],
+  "title": "create_gridArguments",
+  "type": "object"
+ },
+ "create_level": {
+  "properties": {
+   "levels": {
+    "items": {
+     "additionalProperties": true,
+     "type": "object"
+    },
+    "title": "Levels",
+    "type": "array"
+   }
+  },
+  "required": [
+   "levels"
+  ],
+  "title": "create_levelArguments",
+  "type": "object"
+ },
+ "create_line_based_element": {
+  "properties": {
+   "elements": {
+    "items": {
+     "additionalProperties": true,
+     "type": "object"
+    },
+    "title": "Elements",
+    "type": "array"
+   }
+  },
+  "required": [
+   "elements"
+  ],
+  "title": "create_line_based_elementArguments",
+  "type": "object"
+ },
+ "create_mep_system": {
+  "properties": {
+   "element_ids": {
+    "default": null,
+    "items": {
+     "type": "integer"
+    },
+    "title": "Element Ids",
+    "type": "array"
+   },
+   "system_name": {
+    "title": "System Name",
+    "type": "string"
+   },
+   "system_type": {
+    "title": "System Type",
+    "type": "string"
+   }
+  },
+  "required": [
+   "system_type",
+   "system_name"
+  ],
+  "title": "create_mep_systemArguments",
+  "type": "object"
+ },
+ "create_pipe": {
+  "properties": {
+   "diameter": {
+    "default": null,
+    "title": "Diameter",
+    "type": "number"
+   },
+   "end_point": {
+    "additionalProperties": true,
+    "title": "End Point",
+    "type": "object"
+   },
+   "level_name": {
+    "default": null,
+    "title": "Level Name",
+    "type": "string"
+   },
+   "pipe_type": {
+    "default": null,
+    "title": "Pipe Type",
+    "type": "string"
+   },
+   "start_point": {
+    "additionalProperties": true,
+    "title": "Start Point",
+    "type": "object"
+   },
+   "system_type": {
+    "default": null,
+    "title": "System Type",
+    "type": "string"
+   }
+  },
+  "required": [
+   "start_point",
+   "end_point"
+  ],
+  "title": "create_pipeArguments",
+  "type": "object"
+ },
+ "create_room": {
+  "properties": {
+   "level_name": {
+    "title": "Level Name",
+    "type": "string"
+   },
+   "location": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Location",
+    "type": "object"
+   },
+   "name": {
+    "default": null,
+    "title": "Name",
+    "type": "string"
+   },
+   "number": {
+    "default": null,
+    "title": "Number",
+    "type": "string"
+   }
+  },
+  "required": [
+   "level_name"
+  ],
+  "title": "create_roomArguments",
+  "type": "object"
+ },
+ "create_room_separation": {
+  "properties": {
+   "level_name": {
+    "default": null,
+    "title": "Level Name",
+    "type": "string"
+   },
+   "lines": {
+    "items": {
+     "additionalProperties": true,
+     "type": "object"
+    },
+    "title": "Lines",
+    "type": "array"
+   },
+   "view_name": {
+    "default": null,
+    "title": "View Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "lines"
+  ],
+  "title": "create_room_separationArguments",
+  "type": "object"
+ },
+ "create_schedule": {
+  "properties": {
+   "category": {
+    "title": "Category",
+    "type": "string"
+   },
+   "fields": {
+    "default": null,
+    "items": {
+     "type": "string"
+    },
+    "title": "Fields",
+    "type": "array"
+   },
+   "schedule_name": {
+    "default": null,
+    "title": "Schedule Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "category"
+  ],
+  "title": "create_scheduleArguments",
+  "type": "object"
+ },
+ "create_sheet": {
+  "properties": {
+   "sheet_name": {
+    "default": "Unnamed Sheet",
+    "title": "Sheet Name",
+    "type": "string"
+   },
+   "sheet_number": {
+    "default": null,
+    "title": "Sheet Number",
+    "type": "string"
+   },
+   "title_block_name": {
+    "default": null,
+    "title": "Title Block Name",
+    "type": "string"
+   }
+  },
+  "title": "create_sheetArguments",
+  "type": "object"
+ },
+ "create_structural_framing": {
+  "properties": {
+   "elements": {
+    "items": {
+     "additionalProperties": true,
+     "type": "object"
+    },
+    "title": "Elements",
+    "type": "array"
+   }
+  },
+  "required": [
+   "elements"
+  ],
+  "title": "create_structural_framingArguments",
+  "type": "object"
+ },
+ "create_surface_based_element": {
+  "properties": {
+   "elements": {
+    "items": {
+     "additionalProperties": true,
+     "type": "object"
+    },
+    "title": "Elements",
+    "type": "array"
+   }
+  },
+  "required": [
+   "elements"
+  ],
+  "title": "create_surface_based_elementArguments",
+  "type": "object"
+ },
+ "create_view": {
+  "properties": {
+   "level_name": {
+    "default": null,
+    "title": "Level Name",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "section_box": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Section Box",
+    "type": "object"
+   },
+   "view_type": {
+    "title": "View Type",
+    "type": "string"
+   }
+  },
+  "required": [
+   "view_type",
+   "name"
+  ],
+  "title": "create_viewArguments",
+  "type": "object"
+ },
+ "delete_elements": {
+  "properties": {
+   "element_ids": {
+    "items": {
+     "type": "integer"
+    },
+    "title": "Element Ids",
+    "type": "array"
+   }
+  },
+  "required": [
+   "element_ids"
+  ],
+  "title": "delete_elementsArguments",
+  "type": "object"
+ },
+ "execute_revit_code": {
+  "properties": {
+   "code": {
+    "title": "Code",
+    "type": "string"
+   },
+   "description": {
+    "default": "Code execution",
+    "title": "Description",
+    "type": "string"
+   }
+  },
+  "required": [
+   "code"
+  ],
+  "title": "execute_revit_codeArguments",
+  "type": "object"
+ },
+ "export_document": {
+  "properties": {
+   "format": {
+    "default": "pdf",
+    "title": "Format",
+    "type": "string"
+   },
+   "resolution": {
+    "default": 300,
+    "title": "Resolution",
+    "type": "integer"
+   },
+   "view_name": {
+    "default": null,
+    "title": "View Name",
+    "type": "string"
+   }
+  },
+  "title": "export_documentArguments",
+  "type": "object"
+ },
+ "export_ifc": {
+  "properties": {
+   "export_base_quantities": {
+    "default": true,
+    "title": "Export Base Quantities",
+    "type": "boolean"
+   },
+   "file_path": {
+    "title": "File Path",
+    "type": "string"
+   },
+   "ifc_version": {
+    "default": "IFC2x3",
+    "title": "Ifc Version",
+    "type": "string"
+   },
+   "view_name": {
+    "default": null,
+    "title": "View Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "file_path"
+  ],
+  "title": "export_ifcArguments",
+  "type": "object"
+ },
+ "export_room_data": {
+  "properties": {},
+  "title": "export_room_dataArguments",
+  "type": "object"
+ },
+ "get_current_view_elements": {
+  "properties": {},
+  "title": "get_current_view_elementsArguments",
+  "type": "object"
+ },
+ "get_current_view_info": {
+  "properties": {},
+  "title": "get_current_view_infoArguments",
+  "type": "object"
+ },
+ "get_element_properties": {
+  "properties": {
+   "element_id": {
+    "title": "Element Id",
+    "type": "integer"
+   },
+   "include_type_params": {
+    "default": true,
+    "title": "Include Type Params",
+    "type": "boolean"
+   }
+  },
+  "required": [
+   "element_id"
+  ],
+  "title": "get_element_propertiesArguments",
+  "type": "object"
+ },
+ "get_material_quantities": {
+  "properties": {
+   "categories": {
+    "default": null,
+    "items": {
+     "type": "string"
+    },
+    "title": "Categories",
+    "type": "array"
+   }
+  },
+  "title": "get_material_quantitiesArguments",
+  "type": "object"
+ },
+ "get_revit_model_info": {
+  "properties": {},
+  "title": "get_revit_model_infoArguments",
+  "type": "object"
+ },
+ "get_revit_status": {
+  "properties": {},
+  "title": "get_revit_statusArguments",
+  "type": "object"
+ },
+ "get_revit_view": {
+  "properties": {
+   "view_name": {
+    "title": "View Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "view_name"
+  ],
+  "title": "get_revit_viewArguments",
+  "type": "object"
+ },
+ "get_selected_elements": {
+  "properties": {},
+  "title": "get_selected_elementsArguments",
+  "type": "object"
+ },
+ "link_file": {
+  "properties": {
+   "file_path": {
+    "title": "File Path",
+    "type": "string"
+   },
+   "mode": {
+    "default": "link",
+    "title": "Mode",
+    "type": "string"
+   },
+   "position": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Position",
+    "type": "object"
+   }
+  },
+  "required": [
+   "file_path"
+  ],
+  "title": "link_fileArguments",
+  "type": "object"
+ },
+ "list_category_parameters": {
+  "properties": {
+   "category_name": {
+    "title": "Category Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "category_name"
+  ],
+  "title": "list_category_parametersArguments",
+  "type": "object"
+ },
+ "list_families": {
+  "properties": {
+   "contains": {
+    "default": null,
+    "title": "Contains",
+    "type": "string"
+   },
+   "limit": {
+    "default": 50,
+    "title": "Limit",
+    "type": "integer"
+   }
+  },
+  "title": "list_familiesArguments",
+  "type": "object"
+ },
+ "list_family_categories": {
+  "properties": {},
+  "title": "list_family_categoriesArguments",
+  "type": "object"
+ },
+ "list_levels": {
+  "properties": {},
+  "title": "list_levelsArguments",
+  "type": "object"
+ },
+ "list_revit_views": {
+  "properties": {},
+  "title": "list_revit_viewsArguments",
+  "type": "object"
+ },
+ "load_family": {
+  "properties": {
+   "file_path": {
+    "title": "File Path",
+    "type": "string"
+   }
+  },
+  "required": [
+   "file_path"
+  ],
+  "title": "load_familyArguments",
+  "type": "object"
+ },
+ "modify_element": {
+  "properties": {
+   "element_id": {
+    "title": "Element Id",
+    "type": "integer"
+   },
+   "parameters": {
+    "additionalProperties": true,
+    "title": "Parameters",
+    "type": "object"
+   }
+  },
+  "required": [
+   "element_id",
+   "parameters"
+  ],
+  "title": "modify_elementArguments",
+  "type": "object"
+ },
+ "place_family": {
+  "properties": {
+   "family_name": {
+    "title": "Family Name",
+    "type": "string"
+   },
+   "level_name": {
+    "default": null,
+    "title": "Level Name",
+    "type": "string"
+   },
+   "properties": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Properties",
+    "type": "object"
+   },
+   "rotation": {
+    "default": 0.0,
+    "title": "Rotation",
+    "type": "number"
+   },
+   "type_name": {
+    "default": null,
+    "title": "Type Name",
+    "type": "string"
+   },
+   "x": {
+    "default": 0.0,
+    "title": "X",
+    "type": "number"
+   },
+   "y": {
+    "default": 0.0,
+    "title": "Y",
+    "type": "number"
+   },
+   "z": {
+    "default": 0.0,
+    "title": "Z",
+    "type": "number"
+   }
+  },
+  "required": [
+   "family_name"
+  ],
+  "title": "place_familyArguments",
+  "type": "object"
+ },
+ "save_document": {
+  "properties": {
+   "file_path": {
+    "default": null,
+    "title": "File Path",
+    "type": "string"
+   },
+   "overwrite": {
+    "default": true,
+    "title": "Overwrite",
+    "type": "boolean"
+   }
+  },
+  "title": "save_documentArguments",
+  "type": "object"
+ },
+ "set_active_view": {
+  "properties": {
+   "view_name": {
+    "title": "View Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "view_name"
+  ],
+  "title": "set_active_viewArguments",
+  "type": "object"
+ },
+ "set_parameter": {
+  "properties": {
+   "element_id": {
+    "title": "Element Id",
+    "type": "integer"
+   },
+   "parameter_name": {
+    "title": "Parameter Name",
+    "type": "string"
+   },
+   "value": {
+    "title": "Value",
+    "type": "string"
+   }
+  },
+  "required": [
+   "element_id",
+   "parameter_name",
+   "value"
+  ],
+  "title": "set_parameterArguments",
+  "type": "object"
+ },
+ "tag_elements": {
+  "properties": {
+   "add_leader": {
+    "default": false,
+    "title": "Add Leader",
+    "type": "boolean"
+   },
+   "element_ids": {
+    "items": {
+     "type": "integer"
+    },
+    "title": "Element Ids",
+    "type": "array"
+   },
+   "offset": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Offset",
+    "type": "object"
+   },
+   "orientation": {
+    "default": "horizontal",
+    "title": "Orientation",
+    "type": "string"
+   },
+   "tag_type_name": {
+    "default": null,
+    "title": "Tag Type Name",
+    "type": "string"
+   },
+   "view_name": {
+    "default": null,
+    "title": "View Name",
+    "type": "string"
+   }
+  },
+  "required": [
+   "element_ids"
+  ],
+  "title": "tag_elementsArguments",
+  "type": "object"
+ },
+ "tag_walls": {
+  "properties": {
+   "tag_type_name": {
+    "default": null,
+    "title": "Tag Type Name",
+    "type": "string"
+   },
+   "use_leader": {
+    "default": false,
+    "title": "Use Leader",
+    "type": "boolean"
+   }
+  },
+  "title": "tag_wallsArguments",
+  "type": "object"
+ },
+ "transform_elements": {
+  "properties": {
+   "angle": {
+    "default": null,
+    "title": "Angle",
+    "type": "number"
+   },
+   "axis_point": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Axis Point",
+    "type": "object"
+   },
+   "element_ids": {
+    "items": {
+     "type": "integer"
+    },
+    "title": "Element Ids",
+    "type": "array"
+   },
+   "mirror_plane": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Mirror Plane",
+    "type": "object"
+   },
+   "operation": {
+    "title": "Operation",
+    "type": "string"
+   },
+   "vector": {
+    "additionalProperties": true,
+    "default": null,
+    "title": "Vector",
+    "type": "object"
+   }
+  },
+  "required": [
+   "element_ids",
+   "operation"
+  ],
+  "title": "transform_elementsArguments",
+  "type": "object"
+ }
+}

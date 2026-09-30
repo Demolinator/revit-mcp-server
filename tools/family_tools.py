@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Family and placement tools"""
+"""Family discovery, loading, and placement tools."""
 
-from mcp.server.fastmcp import Context
-from typing import Dict, Any
-from .utils import format_response
+from typing import Any, Dict
+
+from .utils import Context, format_response
 
 
 def register_family_tools(mcp, revit_get, revit_post):
-    """Register family-related tools"""
+    """Register place_family, list_families, list_family_categories, load_family."""
 
     @mcp.tool()
     async def place_family(
@@ -21,8 +21,25 @@ def register_family_tools(mcp, revit_get, revit_post):
         properties: Dict[str, Any] = None,
         ctx: Context = None,
     ) -> str:
-        """Place a family instance at a specified location in the Revit model"""
-        data = {
+        """Place one instance of a loaded family (furniture, equipment, doors, windows...).
+
+        Coordinates are in millimeters. Doors and windows are hosted on the
+        wall nearest the point, so create walls first. Use list_families to
+        find valid names, or load_family to bring in a new .rfa.
+
+        Args:
+            family_name: Family name, e.g. "Desk".
+            type_name: Type within the family, e.g. "1525 x 762mm". Uses the
+                first type when omitted.
+            x: X coordinate in mm.
+            y: Y coordinate in mm.
+            z: Z offset in mm.
+            rotation: Rotation about the vertical axis, in degrees.
+            level_name: Level to place on, e.g. "Level 1".
+            properties: Instance parameters to set afterwards, e.g.
+                {"Comments": "AI placed"}.
+        """
+        payload = {
             "family_name": family_name,
             "type_name": type_name,
             "location": {"x": x, "y": y, "z": z},
@@ -30,28 +47,29 @@ def register_family_tools(mcp, revit_get, revit_post):
             "level_name": level_name,
             "properties": properties or {},
         }
-        response = await revit_post("/place_family/", data, ctx)
-        return format_response(response)
+        return format_response(await revit_post("/place_family/", payload, ctx))
 
     @mcp.tool()
     async def list_families(
         contains: str = None, limit: int = 50, ctx: Context = None
     ) -> str:
-        """Get a flat list of available family types in the current Revit model"""
-        params = {}
-        if contains:
-            params["contains"] = contains
-        if limit != 50:
-            params["limit"] = str(limit)
+        """List loaded family types as family name, type name, and category.
 
-        result = await revit_get("/list_families/", ctx, params=params)
-        return format_response(result)
+        Args:
+            contains: Only return families or types whose name contains this text.
+            limit: Maximum number of results (default 50).
+        """
+        query = {}
+        if contains:
+            query["contains"] = contains
+        if limit != 50:
+            query["limit"] = str(limit)
+        return format_response(await revit_get("/list_families/", ctx, params=query))
 
     @mcp.tool()
     async def list_family_categories(ctx: Context = None) -> str:
-        """Get a list of all family categories in the current Revit model"""
-        response = await revit_get("/list_family_categories/", ctx)
-        return format_response(response)
+        """List the categories that have loadable families in this model, with counts."""
+        return format_response(await revit_get("/list_family_categories/", ctx))
 
     @mcp.tool()
     async def load_family(file_path: str, ctx: Context = None) -> str:

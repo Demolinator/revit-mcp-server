@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Analysis tools — element filtering, rooms, materials, and statistics"""
 
-from mcp.server.fastmcp import Context
-from .utils import format_response
+from .utils import Context, format_response
 
 
 def register_analysis_tools(mcp, revit_get, revit_post, revit_image=None):
