@@ -13,7 +13,7 @@ def register_interop_tools(mcp, revit_get, revit_post, revit_image=None):
         file_path: str,
         ifc_version: str = "IFC2x3",
         export_base_quantities: bool = True,
-        view_name: str = None,
+        view_name: str | None = None,
         ctx: Context = None,
     ) -> str:
         """Export the Revit model to IFC format.
@@ -42,7 +42,7 @@ def register_interop_tools(mcp, revit_get, revit_post, revit_image=None):
     async def link_file(
         file_path: str,
         mode: str = "link",
-        position: dict = None,
+        position: dict | None = None,
         ctx: Context = None,
     ) -> str:
         """Link or import an external file into the Revit model.

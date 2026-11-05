@@ -2,21 +2,42 @@
  "ai_element_filter": {
   "properties": {
    "bounding_box_max": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Bounding Box Max",
-    "type": "object"
+    "title": "Bounding Box Max"
    },
    "bounding_box_min": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Bounding Box Min",
-    "type": "object"
+    "title": "Bounding Box Min"
    },
    "category": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Category",
-    "type": "string"
+    "title": "Category"
    },
    "max_elements": {
     "default": 50,
@@ -24,9 +45,16 @@
     "type": "integer"
    },
    "type_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Type Name",
-    "type": "string"
+    "title": "Type Name"
    },
    "visible_in_view": {
     "default": false,
@@ -50,20 +78,34 @@
     "type": "integer"
    },
    "set_a_categories": {
+    "anyOf": [
+     {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "items": {
-     "type": "string"
-    },
-    "title": "Set A Categories",
-    "type": "array"
+    "title": "Set A Categories"
    },
    "set_b_categories": {
+    "anyOf": [
+     {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "items": {
-     "type": "string"
-    },
-    "title": "Set B Categories",
-    "type": "array"
+    "title": "Set B Categories"
    }
   },
   "title": "check_clashesArguments",
@@ -128,9 +170,16 @@
     "type": "object"
    },
    "line_style": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Line Style",
-    "type": "string"
+    "title": "Line Style"
    },
    "start_point": {
     "additionalProperties": true,
@@ -138,9 +187,16 @@
     "type": "object"
    },
    "view_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "View Name",
-    "type": "string"
+    "title": "View Name"
    }
   },
   "required": [
@@ -174,14 +230,28 @@
  "create_duct": {
   "properties": {
    "diameter": {
+    "anyOf": [
+     {
+      "type": "number"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Diameter",
-    "type": "number"
+    "title": "Diameter"
    },
    "duct_type": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Duct Type",
-    "type": "string"
+    "title": "Duct Type"
    },
    "end_point": {
     "additionalProperties": true,
@@ -189,14 +259,28 @@
     "type": "object"
    },
    "height": {
+    "anyOf": [
+     {
+      "type": "number"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Height",
-    "type": "number"
+    "title": "Height"
    },
    "level_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Level Name",
-    "type": "string"
+    "title": "Level Name"
    },
    "start_point": {
     "additionalProperties": true,
@@ -204,14 +288,28 @@
     "type": "object"
    },
    "system_type": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "System Type",
-    "type": "string"
+    "title": "System Type"
    },
    "width": {
+    "anyOf": [
+     {
+      "type": "number"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Width",
-    "type": "number"
+    "title": "Width"
    }
   },
   "required": [
@@ -275,12 +373,19 @@
  "create_mep_system": {
   "properties": {
    "element_ids": {
+    "anyOf": [
+     {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "items": {
-     "type": "integer"
-    },
-    "title": "Element Ids",
-    "type": "array"
+    "title": "Element Ids"
    },
    "system_name": {
     "title": "System Name",
@@ -301,9 +406,16 @@
  "create_pipe": {
   "properties": {
    "diameter": {
+    "anyOf": [
+     {
+      "type": "number"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Diameter",
-    "type": "number"
+    "title": "Diameter"
    },
    "end_point": {
     "additionalProperties": true,
@@ -311,14 +423,28 @@
     "type": "object"
    },
    "level_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Level Name",
-    "type": "string"
+    "title": "Level Name"
    },
    "pipe_type": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Pipe Type",
-    "type": "string"
+    "title": "Pipe Type"
    },
    "start_point": {
     "additionalProperties": true,
@@ -326,9 +452,16 @@
     "type": "object"
    },
    "system_type": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "System Type",
-    "type": "string"
+    "title": "System Type"
    }
   },
   "required": [
@@ -345,20 +478,41 @@
     "type": "string"
    },
    "location": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Location",
-    "type": "object"
+    "title": "Location"
    },
    "name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Name",
-    "type": "string"
+    "title": "Name"
    },
    "number": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Number",
-    "type": "string"
+    "title": "Number"
    }
   },
   "required": [
@@ -370,9 +524,16 @@
  "create_room_separation": {
   "properties": {
    "level_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Level Name",
-    "type": "string"
+    "title": "Level Name"
    },
    "lines": {
     "items": {
@@ -383,9 +544,16 @@
     "type": "array"
    },
    "view_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "View Name",
-    "type": "string"
+    "title": "View Name"
    }
   },
   "required": [
@@ -401,17 +569,31 @@
     "type": "string"
    },
    "fields": {
+    "anyOf": [
+     {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "items": {
-     "type": "string"
-    },
-    "title": "Fields",
-    "type": "array"
+    "title": "Fields"
    },
    "schedule_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Schedule Name",
-    "type": "string"
+    "title": "Schedule Name"
    }
   },
   "required": [
@@ -428,14 +610,28 @@
     "type": "string"
    },
    "sheet_number": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Sheet Number",
-    "type": "string"
+    "title": "Sheet Number"
    },
    "title_block_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Title Block Name",
-    "type": "string"
+    "title": "Title Block Name"
    }
   },
   "title": "create_sheetArguments",
@@ -478,19 +674,33 @@
  "create_view": {
   "properties": {
    "level_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Level Name",
-    "type": "string"
+    "title": "Level Name"
    },
    "name": {
     "title": "Name",
     "type": "string"
    },
    "section_box": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Section Box",
-    "type": "object"
+    "title": "Section Box"
    },
    "view_type": {
     "title": "View Type",
@@ -551,9 +761,16 @@
     "type": "integer"
    },
    "view_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "View Name",
-    "type": "string"
+    "title": "View Name"
    }
   },
   "title": "export_documentArguments",
@@ -576,9 +793,16 @@
     "type": "string"
    },
    "view_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "View Name",
-    "type": "string"
+    "title": "View Name"
    }
   },
   "required": [
@@ -623,12 +847,19 @@
  "get_material_quantities": {
   "properties": {
    "categories": {
+    "anyOf": [
+     {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "items": {
-     "type": "string"
-    },
-    "title": "Categories",
-    "type": "array"
+    "title": "Categories"
    }
   },
   "title": "get_material_quantitiesArguments",
@@ -674,10 +905,17 @@
     "type": "string"
    },
    "position": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Position",
-    "type": "object"
+    "title": "Position"
    }
   },
   "required": [
@@ -702,9 +940,16 @@
  "list_families": {
   "properties": {
    "contains": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Contains",
-    "type": "string"
+    "title": "Contains"
    },
    "limit": {
     "default": 50,
@@ -769,15 +1014,29 @@
     "type": "string"
    },
    "level_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Level Name",
-    "type": "string"
+    "title": "Level Name"
    },
    "properties": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Properties",
-    "type": "object"
+    "title": "Properties"
    },
    "rotation": {
     "default": 0.0,
@@ -785,9 +1044,16 @@
     "type": "number"
    },
    "type_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Type Name",
-    "type": "string"
+    "title": "Type Name"
    },
    "x": {
     "default": 0.0,
@@ -814,9 +1080,16 @@
  "save_document": {
   "properties": {
    "file_path": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "File Path",
-    "type": "string"
+    "title": "File Path"
    },
    "overwrite": {
     "default": true,
@@ -878,10 +1151,17 @@
     "type": "array"
    },
    "offset": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Offset",
-    "type": "object"
+    "title": "Offset"
    },
    "orientation": {
     "default": "horizontal",
@@ -889,14 +1169,28 @@
     "type": "string"
    },
    "tag_type_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Tag Type Name",
-    "type": "string"
+    "title": "Tag Type Name"
    },
    "view_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "View Name",
-    "type": "string"
+    "title": "View Name"
    }
   },
   "required": [
@@ -908,9 +1202,16 @@
  "tag_walls": {
   "properties": {
    "tag_type_name": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Tag Type Name",
-    "type": "string"
+    "title": "Tag Type Name"
    },
    "use_leader": {
     "default": false,
@@ -924,15 +1225,29 @@
  "transform_elements": {
   "properties": {
    "angle": {
+    "anyOf": [
+     {
+      "type": "number"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Angle",
-    "type": "number"
+    "title": "Angle"
    },
    "axis_point": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Axis Point",
-    "type": "object"
+    "title": "Axis Point"
    },
    "element_ids": {
     "items": {
@@ -942,20 +1257,34 @@
     "type": "array"
    },
    "mirror_plane": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Mirror Plane",
-    "type": "object"
+    "title": "Mirror Plane"
    },
    "operation": {
     "title": "Operation",
     "type": "string"
    },
    "vector": {
-    "additionalProperties": true,
+    "anyOf": [
+     {
+      "additionalProperties": true,
+      "type": "object"
+     },
+     {
+      "type": "null"
+     }
+    ],
     "default": null,
-    "title": "Vector",
-    "type": "object"
+    "title": "Vector"
    }
   },
   "required": [

@@ -33,7 +33,7 @@ def register_annotation_tools(mcp, revit_get, revit_post, revit_image=None):
     @mcp.tool()
     async def tag_walls(
         use_leader: bool = False,
-        tag_type_name: str = None,
+        tag_type_name: str | None = None,
         ctx: Context = None,
     ) -> str:
         """Tag all untagged walls in the current Revit view.

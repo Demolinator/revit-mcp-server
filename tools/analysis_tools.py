@@ -10,11 +10,11 @@ def register_analysis_tools(mcp, revit_get, revit_post, revit_image=None):
 
     @mcp.tool()
     async def ai_element_filter(
-        category: str = None,
-        type_name: str = None,
+        category: str | None = None,
+        type_name: str | None = None,
         visible_in_view: bool = False,
-        bounding_box_min: dict = None,
-        bounding_box_max: dict = None,
+        bounding_box_min: dict | None = None,
+        bounding_box_max: dict | None = None,
         max_elements: int = 50,
         ctx: Context = None,
     ) -> str:
@@ -61,7 +61,7 @@ def register_analysis_tools(mcp, revit_get, revit_post, revit_image=None):
 
     @mcp.tool()
     async def get_material_quantities(
-        categories: list[str] = None,
+        categories: list[str] | None = None,
         ctx: Context = None,
     ) -> str:
         """Get material quantities (areas and volumes) from the Revit model.

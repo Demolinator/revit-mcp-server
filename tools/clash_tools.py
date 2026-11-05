@@ -10,8 +10,8 @@ def register_clash_tools(mcp, revit_get, revit_post, revit_image=None):
 
     @mcp.tool()
     async def check_clashes(
-        set_a_categories: list[str] = None,
-        set_b_categories: list[str] = None,
+        set_a_categories: list[str] | None = None,
+        set_b_categories: list[str] | None = None,
         max_clashes: int = 200,
         ctx: Context = None,
     ) -> str:

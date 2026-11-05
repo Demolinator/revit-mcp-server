@@ -12,8 +12,8 @@ def register_detail_tools(mcp, revit_get, revit_post, revit_image=None):
     async def create_detail_line(
         start_point: dict,
         end_point: dict,
-        view_name: str = None,
-        line_style: str = None,
+        view_name: str | None = None,
+        line_style: str | None = None,
         ctx: Context = None,
     ) -> str:
         """Create a detail line in a Revit view for annotation purposes.

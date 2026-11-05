@@ -38,6 +38,24 @@ def test_tool_contract_is_unchanged():
         assert actual[name] == expected[name], name
 
 
+def test_null_defaults_are_allowed_values():
+    """An argument that advertises "default": null must accept null.
+
+    Clients that fill optional fields from the schema send that default back, so
+    write `x: str | None = None`, not `x: str = None`.
+    """
+    contract = json.load(open(CONTRACT, encoding="utf-8"))
+    offenders = [
+        "{}.{}".format(tool, name)
+        for tool, schema in contract.items()
+        for name, prop in schema.get("properties", {}).items()
+        if "default" in prop
+        and prop["default"] is None
+        and not any(option.get("type") == "null" for option in prop.get("anyOf", []))
+    ]
+    assert offenders == []
+
+
 def test_every_tool_has_a_description():
     for tool in run(main.mcp.list_tools()):
         assert tool.description and len(tool.description.strip()) > 20, tool.name

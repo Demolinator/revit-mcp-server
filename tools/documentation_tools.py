@@ -10,9 +10,9 @@ def register_documentation_tools(mcp, revit_get, revit_post, revit_image=None):
 
     @mcp.tool()
     async def create_sheet(
-        sheet_number: str = None,
+        sheet_number: str | None = None,
         sheet_name: str = "Unnamed Sheet",
-        title_block_name: str = None,
+        title_block_name: str | None = None,
         ctx: Context = None,
     ) -> str:
         """Create a drawing sheet in Revit for construction documentation.
@@ -38,8 +38,8 @@ def register_documentation_tools(mcp, revit_get, revit_post, revit_image=None):
     @mcp.tool()
     async def create_schedule(
         category: str,
-        fields: list[str] = None,
-        schedule_name: str = None,
+        fields: list[str] | None = None,
+        schedule_name: str | None = None,
         ctx: Context = None,
     ) -> str:
         """Create a schedule (quantity takeoff view) for a specific element category.
@@ -65,7 +65,7 @@ def register_documentation_tools(mcp, revit_get, revit_post, revit_image=None):
 
     @mcp.tool()
     async def export_document(
-        view_name: str = None,
+        view_name: str | None = None,
         format: str = "pdf",
         resolution: int = 300,
         ctx: Context = None,
