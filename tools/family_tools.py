@@ -12,13 +12,13 @@ def register_family_tools(mcp, revit_get, revit_post):
     @mcp.tool()
     async def place_family(
         family_name: str,
-        type_name: str = None,
+        type_name: str | None = None,
         x: float = 0.0,
         y: float = 0.0,
         z: float = 0.0,
         rotation: float = 0.0,
-        level_name: str = None,
-        properties: Dict[str, Any] = None,
+        level_name: str | None = None,
+        properties: Dict[str, Any] | None = None,
         ctx: Context = None,
     ) -> str:
         """Place one instance of a loaded family (furniture, equipment, doors, windows...).
@@ -51,7 +51,7 @@ def register_family_tools(mcp, revit_get, revit_post):
 
     @mcp.tool()
     async def list_families(
-        contains: str = None, limit: int = 50, ctx: Context = None
+        contains: str | None = None, limit: int = 50, ctx: Context = None
     ) -> str:
         """List loaded family types as family name, type name, and category.
 

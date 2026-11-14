@@ -12,10 +12,10 @@ def register_transform_tools(mcp, revit_get, revit_post, revit_image=None):
     async def transform_elements(
         element_ids: list[int],
         operation: str,
-        vector: dict = None,
-        axis_point: dict = None,
-        angle: float = None,
-        mirror_plane: dict = None,
+        vector: dict | None = None,
+        axis_point: dict | None = None,
+        angle: float | None = None,
+        mirror_plane: dict | None = None,
         ctx: Context = None,
     ) -> str:
         """Move, copy, rotate, or mirror elements in the Revit model.

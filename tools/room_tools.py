@@ -11,9 +11,9 @@ def register_room_tools(mcp, revit_get, revit_post, revit_image=None):
     @mcp.tool()
     async def create_room(
         level_name: str,
-        location: dict = None,
-        name: str = None,
-        number: str = None,
+        location: dict | None = None,
+        name: str | None = None,
+        number: str | None = None,
         ctx: Context = None,
     ) -> str:
         """Create a room in the Revit model at a specified level.
@@ -41,8 +41,8 @@ def register_room_tools(mcp, revit_get, revit_post, revit_image=None):
     @mcp.tool()
     async def create_room_separation(
         lines: list[dict],
-        level_name: str = None,
-        view_name: str = None,
+        level_name: str | None = None,
+        view_name: str | None = None,
         ctx: Context = None,
     ) -> str:
         """Create room separation lines to define room boundaries.

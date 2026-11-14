@@ -12,12 +12,12 @@ def register_mep_tools(mcp, revit_get, revit_post, revit_image=None):
     async def create_duct(
         start_point: dict,
         end_point: dict,
-        system_type: str = None,
-        duct_type: str = None,
-        level_name: str = None,
-        diameter: float = None,
-        width: float = None,
-        height: float = None,
+        system_type: str | None = None,
+        duct_type: str | None = None,
+        level_name: str | None = None,
+        diameter: float | None = None,
+        width: float | None = None,
+        height: float | None = None,
         ctx: Context = None,
     ) -> str:
         """Create a duct in the Revit model between two points.
@@ -57,10 +57,10 @@ def register_mep_tools(mcp, revit_get, revit_post, revit_image=None):
     async def create_pipe(
         start_point: dict,
         end_point: dict,
-        system_type: str = None,
-        pipe_type: str = None,
-        level_name: str = None,
-        diameter: float = None,
+        system_type: str | None = None,
+        pipe_type: str | None = None,
+        level_name: str | None = None,
+        diameter: float | None = None,
         ctx: Context = None,
     ) -> str:
         """Create a pipe in the Revit model between two points.
@@ -93,7 +93,7 @@ def register_mep_tools(mcp, revit_get, revit_post, revit_image=None):
     async def create_mep_system(
         system_type: str,
         system_name: str,
-        element_ids: list[int] = None,
+        element_ids: list[int] | None = None,
         ctx: Context = None,
     ) -> str:
         """Create a mechanical or piping system and optionally add elements to it.

@@ -11,11 +11,11 @@ def register_tag_tools(mcp, revit_get, revit_post, revit_image=None):
     @mcp.tool()
     async def tag_elements(
         element_ids: list[int],
-        view_name: str = None,
-        tag_type_name: str = None,
+        view_name: str | None = None,
+        tag_type_name: str | None = None,
         add_leader: bool = False,
         orientation: str = "horizontal",
-        offset: dict = None,
+        offset: dict | None = None,
         ctx: Context = None,
     ) -> str:
         """Tag elements with annotation symbols in a view.

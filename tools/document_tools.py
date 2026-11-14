@@ -10,7 +10,7 @@ def register_document_tools(mcp, revit_get, revit_post, revit_image=None):
 
     @mcp.tool()
     async def save_document(
-        file_path: str = None,
+        file_path: str | None = None,
         overwrite: bool = True,
         ctx: Context = None,
     ) -> str:
