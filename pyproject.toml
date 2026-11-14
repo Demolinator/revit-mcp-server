@@ -8,7 +8,10 @@ authors = [{ name = "Talal Ahmed" }]
 requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.27",
-    "mcp[cli]>=1.9.0",
+    # mcp 1.10+ fails to load the tools (see #13), and mcp 1.9.x breaks on
+    # pydantic 2.14+. Raise both caps together when #13 upgrades the SDK.
+    "mcp[cli]>=1.9.0,<1.10",
+    "pydantic>=2.11,<2.14",
 ]
 
 [dependency-groups]
