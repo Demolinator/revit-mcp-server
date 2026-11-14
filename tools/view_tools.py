@@ -2,6 +2,7 @@
 """View inspection and image export tools."""
 
 from typing import Union
+from urllib.parse import quote
 
 from mcp.server.fastmcp import Image
 
@@ -20,7 +21,7 @@ def register_view_tools(mcp, revit_get, revit_post, revit_image):
             view_name: Exact view name as returned by list_revit_views,
                 e.g. "Level 1" or "{3D}".
         """
-        return await revit_image("/get_view/{}".format(view_name), ctx)
+        return await revit_image("/get_view/" + quote(view_name, safe=""), ctx)
 
     @mcp.tool()
     async def list_revit_views(ctx: Context = None) -> str:

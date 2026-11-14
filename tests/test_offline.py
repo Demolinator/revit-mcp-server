@@ -167,3 +167,24 @@ def test_image_is_decoded():
 ])
 def test_transport_flags(argv, expected):
     assert main.parse_args(argv).transport == expected
+
+
+def test_get_revit_view_encodes_hash_in_view_name():
+    """View names containing '#' must be percent-encoded so the fragment is not stripped."""
+    from mcp.server.fastmcp import FastMCP
+    from tools.view_tools import register_view_tools
+
+    captured = {}
+
+    async def fake_image(path, ctx=None):
+        captured["path"] = path
+        return "ok"
+
+    mcp = FastMCP("test")
+    register_view_tools(mcp, lambda p, c=None: None, lambda p, d, c=None: None, fake_image)
+
+    result = run(mcp.call_tool("get_revit_view", {"view_name": "Plan #2"}))
+    assert captured["path"] == "/get_view/Plan%20%232"
+    # Also confirm normal names still work
+    run(mcp.call_tool("get_revit_view", {"view_name": "Level 1"}))
+    assert captured["path"] == "/get_view/Level%201"
