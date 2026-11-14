@@ -252,15 +252,14 @@ Contributions are welcome — from typo fixes to new tools! Read **[CONTRIBUTING
 
 ## Contributors
 
-Thanks to everyone who has built, fixed, tested, and reported issues on this project.
+Thanks to everyone who has built, fixed, tested, and reported issues in this repository.
 See **[CONTRIBUTORS.md](CONTRIBUTORS.md)** for who did what.
 
-<a href="https://github.com/JotaDeRodriguez"><img src="https://github.com/JotaDeRodriguez.png?size=64" width="64" height="64" alt="Juan Rodriguez" title="Juan Rodriguez"></a>
 <a href="https://github.com/Demolinator"><img src="https://github.com/Demolinator.png?size=64" width="64" height="64" alt="Talal Ahmed" title="Talal Ahmed"></a>
-<a href="https://github.com/jmcouffin"><img src="https://github.com/jmcouffin.png?size=64" width="64" height="64" alt="Jean-Marc Couffin" title="Jean-Marc Couffin"></a>
-<a href="https://github.com/ArmandU25"><img src="https://github.com/ArmandU25.png?size=64" width="64" height="64" alt="ArmandU25" title="ArmandU25"></a>
 <a href="https://github.com/jalv92"><img src="https://github.com/jalv92.png?size=64" width="64" height="64" alt="jalv92" title="jalv92"></a>
 <a href="https://github.com/vishalhabib99"><img src="https://github.com/vishalhabib99.png?size=64" width="64" height="64" alt="Vishal Habib" title="Vishal Habib"></a>
+
+Built on [mcp-server-for-revit-python](https://github.com/mcp-servers-for-revit/mcp-server-for-revit-python) by Juan Rodriguez and its contributors.
 
 ## Author
 
