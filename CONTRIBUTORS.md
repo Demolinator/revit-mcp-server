@@ -3,8 +3,8 @@
 These are the people who have worked on Revit MCP Server in this repository.
 Every entry links to the public record of the work, so anyone can check it.
 
-**Every merged pull request earns a place here, including one-line fixes and
-typo corrections.** A bug report with a clear repro counts too. See
+**Every merged pull request earns a place here, including one-line fixes.**
+A bug report with a clear repro counts too. See
 [Getting credit for your work](CONTRIBUTING.md#getting-credit-for-your-work).
 
 ## Maintainer

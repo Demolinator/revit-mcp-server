@@ -428,15 +428,35 @@ to pass.
    - `fix(placement): host doors on walls in Revit 2027`
    - `docs: correct tool counts in README`
    - `perf:`, `refactor:`, `test:`, `chore:` as appropriate
-4. Run `uv run pytest` before you push. There's no CI yet
-   ([#6](https://github.com/Demolinator/revit-mcp-server/issues/6)), so this is
-   the only automated check your change gets.
+4. Run `uv run pytest` before you push. CI then runs the tests, an IronPython 2.7
+   check and lint on your PR, and all of them must pass before it can merge.
+   CI on a first PR from a fork starts once a maintainer approves it.
 5. Push to your fork and open a PR against **`master`**. Fill in the PR
    template, especially the **tested Revit versions**, and add `Closes #123` so
    the issue closes when the PR merges.
 6. A maintainer will review. Expect questions; they're how we keep 48+ tools
    reliable across four Revit versions. Push follow-up commits to the same
    branch.
+
+### What we merge
+
+Size doesn't matter; effect does. A one-line change that fixes a real bug is
+as welcome as a new tool. We merge a PR when it does at least one of these:
+
+- fixes a bug, ideally one with an issue
+- adds or improves a tool, a test, or CI
+- corrects documentation that is wrong, missing, or misleading
+
+We usually close, with thanks, PRs that:
+
+- only reformat, reword, or rename things without fixing anything
+- change whitespace, punctuation, or style in code that already works
+- duplicate an open PR, or an issue someone else has said they're taking
+- bundle unrelated changes together
+
+Not sure your idea is worth a PR? Ask in an issue first, or pick one labeled
+[`good first issue`](https://github.com/Demolinator/revit-mcp-server/labels/good%20first%20issue).
+Those are real fixes that are ready to start.
 
 By contributing, you agree that your contributions are licensed under the
 project's [MIT License](LICENSE).
@@ -451,8 +471,8 @@ they did.
 
 ### What gets you listed
 
-Every merged pull request counts, however small. A one-line fix or a typo
-correction gets you listed just like a new tool does.
+Every merged pull request counts, however small. A one-line bug fix gets you
+listed just like a new tool does. See [What we merge](#what-we-merge).
 
 | Contribution | Example |
 |---|---|
