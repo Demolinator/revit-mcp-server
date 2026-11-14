@@ -1,6 +1,7 @@
 # Contributing to Revit MCP Server
 
-Thanks for your interest in improving this project! Whether you are a BIM
+Thanks for your interest in improving this project! Every merged contribution,
+even a one-line fix, is credited by name in [CONTRIBUTORS.md](CONTRIBUTORS.md). Whether you are a BIM
 professional who found a bug, a Python developer who wants to add a tool, or
 someone fixing a typo — contributions of every size are welcome.
 
@@ -15,6 +16,7 @@ pull request.
 - [Coding conventions](#coding-conventions)
 - [Testing](#testing)
 - [Submitting a pull request](#submitting-a-pull-request)
+- [Getting credit for your work](#getting-credit-for-your-work)
 - [Reporting bugs and requesting features](#reporting-bugs-and-requesting-features)
 - [Security](#security)
 - [Related repositories](#related-repositories)
@@ -41,6 +43,9 @@ Good places to start:
   Several forks contain fixes (non-ASCII text handling, offline tests, new
   tools) that would benefit everyone. Small, focused PRs are much easier to
   review than one large merge.
+
+Before you start on an existing issue, leave a comment saying you're taking it,
+so two people don't do the same work.
 
 If you plan a larger change (new tool family, architecture change, new
 dependency), please **open an issue first** so we can agree on the approach
@@ -256,7 +261,7 @@ def register_wall_stats_tools(mcp, revit_get, revit_post, revit_image=None):
     _ = revit_get, revit_image  # Acknowledge unused parameters
 
     @mcp.tool()
-    async def count_walls(level_name: str = None, ctx: Context = None) -> str:
+    async def count_walls(level_name: str | None = None, ctx: Context = None) -> str:
         """Count the walls in the active Revit model.
 
         Use this to get a quick wall count, either for the whole model or for
@@ -351,6 +356,11 @@ retry.
   return `format_response(...)`. Revit logic belongs in the route.
 - Use `revit_post` for anything that changes the model; `revit_get` for reads.
 - Match the existing `register_<x>_tools(mcp, revit_get, revit_post, revit_image=None)` signature.
+- Write optional arguments as `T | None = None`, not `T = None`. The second form
+  publishes a schema whose default isn't an allowed value, so a client that sends
+  `null` explicitly gets a validation error
+  ([#24](https://github.com/Demolinator/revit-mcp-server/issues/24)). `ctx` is the
+  exception: it's injected by the SDK and isn't part of the schema.
 - Tool names are `snake_case` verbs: `create_*`, `list_*`, `get_*`, `set_*`, …
   Check the README table to avoid overlapping an existing tool.
 
@@ -411,20 +421,75 @@ to pass.
 
 1. **Sync** with upstream: `git fetch upstream && git checkout -b my-change upstream/master`
 2. Make **one logical change per PR**. Separate refactors from features.
+   Don't bump dependencies or touch `uv.lock` unless that's the point of the PR.
 3. Write commits in [Conventional Commits](https://www.conventionalcommits.org/)
    style, as the history already does:
    - `feat: add count_walls tool`
    - `fix(placement): host doors on walls in Revit 2027`
    - `docs: correct tool counts in README`
    - `perf:`, `refactor:`, `test:`, `chore:` as appropriate
-4. Push to your fork and open a PR against **`master`**. Fill in the PR
-   template, especially the **tested Revit versions**.
-5. A maintainer will review. Expect questions; they're how we keep 48+ tools
+4. Run `uv run pytest` before you push. There's no CI yet
+   ([#6](https://github.com/Demolinator/revit-mcp-server/issues/6)), so this is
+   the only automated check your change gets.
+5. Push to your fork and open a PR against **`master`**. Fill in the PR
+   template, especially the **tested Revit versions**, and add `Closes #123` so
+   the issue closes when the PR merges.
+6. A maintainer will review. Expect questions; they're how we keep 48+ tools
    reliable across four Revit versions. Push follow-up commits to the same
    branch.
 
 By contributing, you agree that your contributions are licensed under the
 project's [MIT License](LICENSE).
+
+---
+
+## Getting credit for your work
+
+Everyone whose work helps the project is credited by name in
+[CONTRIBUTORS.md](CONTRIBUTORS.md), with a link to the public record of what
+they did.
+
+### What gets you listed
+
+Every merged pull request counts, however small. A one-line fix or a typo
+correction gets you listed just like a new tool does.
+
+| Contribution | Example |
+|---|---|
+| Code | A new tool, a bug fix, a route handler |
+| Tests and CI | Offline tests, workflow improvements |
+| Documentation | Guides, corrected tool tables, better docstrings |
+| Bug reports | A report with a clear repro that leads to a fix |
+| Verification | Confirming a fix in a Revit version the author couldn't test |
+| Upstreaming | Bringing a fix from your fork back to this repository |
+
+### How you get added
+
+Add a row to `CONTRIBUTORS.md` in your PR, with a link to the PR or issue. If
+you'd rather not, leave it out and a maintainer will add you when it merges.
+Tell us in the PR if you'd like a different name shown, or no listing at all.
+
+### Make sure GitHub counts it
+
+- **Use a commit email linked to your GitHub account.** Otherwise your commits
+  won't appear on your profile. See
+  [GitHub's guide to commit emails](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address).
+- **If a maintainer finishes your work,** your commits are kept where possible.
+  If they have to be rewritten, you stay on them through a `Co-authored-by:`
+  trailer.
+
+### Showing your contribution to others
+
+Your merged work is public and permanent, so you can point employers, clients,
+and colleagues to it. Link to the PR itself rather than the repository, so
+they can see exactly what you did:
+
+> Open-source contributor to [Revit MCP Server](https://github.com/Demolinator/revit-mcp-server),
+> which connects AI assistants to Autodesk Revit. Fixed `<what you fixed>`
+> ([PR #123](https://github.com/Demolinator/revit-mcp-server/pull/123)).
+
+Describe what you actually did, and please say "contributor" rather than
+"maintainer" or "author" unless that's your role.
 
 ---
 
