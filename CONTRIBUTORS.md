@@ -18,6 +18,8 @@ typo corrections.** A bug report with a clear repro counts too. See
 | Contributor | Contribution | Record |
 |---|---|---|
 | [Vishal Habib](https://github.com/vishalhabib99) | Made 47 optional arguments in 21 tools accept the `null` they advertise, added a regression test, and reported the bug in the first place | [PR #26](https://github.com/Demolinator/revit-mcp-server/pull/26), [#24](https://github.com/Demolinator/revit-mcp-server/issues/24) |
+| [Harsh Raj Singhania](https://github.com/HarshRajSinghania) | Fixed `get_revit_view` cutting off view names that contain `#`, with an offline test | [PR #48](https://github.com/Demolinator/revit-mcp-server/pull/48) |
+| [bfs2021](https://github.com/bfs2021) | Fixed the `ai_element_filter` total so it counts only elements matching the type name filter | [PR #49](https://github.com/Demolinator/revit-mcp-server/pull/49) |
 
 ## Bug reports and research
 
