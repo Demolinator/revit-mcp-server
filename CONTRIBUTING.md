@@ -1,6 +1,7 @@
 # Contributing to Revit MCP Server
 
-Thanks for your interest in improving this project! Whether you are a BIM
+Thanks for your interest in improving this project! Every merged contribution,
+even a one-line fix, is credited by name in [CONTRIBUTORS.md](CONTRIBUTORS.md). Whether you are a BIM
 professional who found a bug, a Python developer who wants to add a tool, or
 someone fixing a typo — contributions of every size are welcome.
 
@@ -449,6 +450,9 @@ Everyone whose work helps the project is credited by name in
 they did.
 
 ### What gets you listed
+
+Every merged pull request counts, however small. A one-line fix or a typo
+correction gets you listed just like a new tool does.
 
 | Contribution | Example |
 |---|---|

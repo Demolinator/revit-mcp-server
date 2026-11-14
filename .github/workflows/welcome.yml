@@ -1,0 +1,36 @@
+# Thank people the first time they open an issue or pull request here.
+# Uses pull_request_target so it also works for PRs from forks. It never checks
+# out or runs code from the PR, it only posts a comment.
+name: Welcome first-time contributors
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d # v3.1.0
+        with:
+          issue_message: |
+            Thanks for opening your first issue here, and welcome to Revit MCP Server!
+
+            A maintainer will take a look. If you haven't yet, please add your Revit and pyRevit versions, the tool and arguments you used, and the output of `http://localhost:48884/revit_mcp/status/`. That's usually what it takes to reproduce a problem.
+
+            Bug reports that lead to a fix are credited in [CONTRIBUTORS.md](https://github.com/Demolinator/revit-mcp-server/blob/master/CONTRIBUTORS.md).
+          pr_message: |
+            Thanks for your first pull request here, and welcome to Revit MCP Server!
+
+            A maintainer will review it. Meanwhile, two things help it merge quickly:
+
+            - Run `uv run pytest` and fill in the PR template, including the Revit versions you tested.
+            - Add `Closes #<issue>` if it fixes an issue.
+
+            Every merged pull request, including one-line fixes, is credited in [CONTRIBUTORS.md](https://github.com/Demolinator/revit-mcp-server/blob/master/CONTRIBUTORS.md). See [Getting credit for your work](https://github.com/Demolinator/revit-mcp-server/blob/master/CONTRIBUTING.md#getting-credit-for-your-work).
