@@ -94,10 +94,8 @@ def register_analysis_routes(api):
 
             # Apply type name filter (partial match)
             elements = []
+            total_matched = 0
             for elem in all_elements:
-                if len(elements) >= max_elements:
-                    break
-
                 if type_name:
                     try:
                         elem_type_name = get_element_name(elem)
@@ -116,6 +114,12 @@ def register_analysis_routes(api):
                                 continue
                     except Exception:
                         continue
+
+                # Count every match, so the reported total covers the type
+                # name filter too, then stop collecting past max_elements.
+                total_matched += 1
+                if len(elements) >= max_elements:
+                    continue
 
                 # Build element info
                 elem_info = {
@@ -153,7 +157,6 @@ def register_analysis_routes(api):
 
                 elements.append(elem_info)
 
-            total_matched = len(all_elements)
             count = len(elements)
 
             cat_label = category.replace("OST_", "").lower() if category else "element"
