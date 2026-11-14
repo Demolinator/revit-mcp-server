@@ -1,0 +1,61 @@
+# Checks every pull request and every push to master. None of this needs Revit.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, python: "3.11" }
+          - { os: ubuntu-latest, python: "3.13" }
+          - { os: windows-latest, python: "3.11" }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      # --locked fails if uv.lock is out of date with pyproject.toml.
+      - run: uv sync --locked
+      # Includes the tool contract: any change to a tool's name or arguments must
+      # come with a regenerated tests/tool_contract.json.
+      - run: uv run pytest -q
+
+  revit-side:
+    name: IronPython 2.7 compatibility (revit_mcp/, startup.py)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      # This code runs inside Revit under IronPython 2.7: no f-strings, type hints,
+      # walrus, async, or other Python 3-only syntax.
+      - run: uvx vermin==1.9.2 --no-tips --violations -t=2.7- revit_mcp startup.py
+
+  lint:
+    name: Syntax errors and undefined names
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - name: Server (CPython)
+        run: uvx ruff@0.17.5 check --select E9,F63,F7,F82 --target-version py311 main.py tools tests
+      - name: Extension (IronPython; allow Python 2 builtins)
+        run: >-
+          uvx ruff@0.17.5 check --select E9,F63,F7,F82
+          --config 'builtins=["unicode","basestring","long","unichr","xrange","__revit__"]'
+          revit_mcp startup.py
