@@ -22,7 +22,9 @@ def register_status_routes(api):
         """
         try:
             from pyrevit import revit
-            
+            from revit_mcp import REGISTRATION_FAILURES
+
+            failed_modules = list(REGISTRATION_FAILURES)
             doc = revit.doc
             if doc:
                 return routes.make_response(data={
@@ -30,14 +32,16 @@ def register_status_routes(api):
                     "health": "healthy",
                     "revit_available": True,
                     "document_title": doc.Title if doc.Title else "Untitled",
-                    "api_name": "revit_mcp"
+                    "api_name": "revit_mcp",
+                    "failed_modules": failed_modules
                 })
             else:
                 return routes.make_response(data={
                     "status": "unhealthy", 
                     "revit_available": False,
                     "error": "No active Revit document",
-                    "api_name": "revit_mcp"
+                    "api_name": "revit_mcp",
+                    "failed_modules": failed_modules
                 }, status=503)
                 
         except Exception as e:

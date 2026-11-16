@@ -12,3 +12,7 @@ import logging
 
 # Make logger available to all submodules
 logger = logging.getLogger(__name__)
+
+# Route modules that failed to register at startup, as
+# [{"module": <name>, "error": <message>}]. Filled by startup.register_routes().
+REGISTRATION_FAILURES = []
