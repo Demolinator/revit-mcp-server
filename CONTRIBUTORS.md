@@ -19,7 +19,8 @@ A bug report with a clear repro counts too. See
 |---|---|---|
 | [Vishal Habib](https://github.com/vishalhabib99) | Made 47 optional arguments in 21 tools accept the `null` they advertise, added a regression test, and reported the bug in the first place | [PR #26](https://github.com/Demolinator/revit-mcp-server/pull/26), [#24](https://github.com/Demolinator/revit-mcp-server/issues/24) |
 | [Harsh Raj Singhania](https://github.com/HarshRajSinghania) | Fixed `get_revit_view` cutting off view names that contain `#`, with an offline test | [PR #48](https://github.com/Demolinator/revit-mcp-server/pull/48) |
-| [bfs2021](https://github.com/bfs2021) | Fixed the `ai_element_filter` total so it counts only elements matching the type name filter | [PR #49](https://github.com/Demolinator/revit-mcp-server/pull/49) |
+| [bfs2021](https://github.com/bfs2021) | Fixed the `ai_element_filter` total so it counts only elements matching the type name filter. Made each route module register on its own, so one failing import no longer disables the rest, and `/status/` now lists the modules that failed | [PR #49](https://github.com/Demolinator/revit-mcp-server/pull/49), [PR #53](https://github.com/Demolinator/revit-mcp-server/pull/53) |
+| [Muhammad Yaseen](https://github.com/Mr45401) | Fixed `ai_element_filter` messages that doubled the plural ("wallss"), with offline tests for the route handler | [PR #54](https://github.com/Demolinator/revit-mcp-server/pull/54) |
 
 ## Bug reports and research
 
