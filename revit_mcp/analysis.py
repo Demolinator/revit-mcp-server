@@ -159,12 +159,11 @@ def register_analysis_routes(api):
 
             count = len(elements)
 
-            cat_label = category.replace("OST_", "").lower() if category else "element"
-            message = "Found {} {}{} matching filters".format(
-                total_matched,
-                cat_label,
-                "s" if total_matched != 1 else "",
-            )
+            if category:
+                cat_label = category.replace("OST_", "").lower()
+            else:
+                cat_label = "element" if total_matched == 1 else "elements"
+            message = "Found {} {} matching filters".format(total_matched, cat_label)
 
             return routes.make_response(
                 data={
